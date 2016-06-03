@@ -16,6 +16,7 @@ class OESubject(OEMessage):
             for message in mbox:
                 if not message['subject']:
                     self.skipTest('Empty subject, no reason to execute subject format test')
+                else:
                     try:
                         subject.parseString(message['subject'])
                     except ParseException:
