@@ -9,7 +9,7 @@ class OESignedOffBy(OEMessage):
     def setUp(self):
         self.mark = str(signed_off_by_mark).strip('"')
 
-    def test_signed_off_presence(self):
+    def test_signed_off_by_presence(self):
         """Test presence of 'Signed-off-by' string"""
         for mbox in OESignedOffBy.mboxes:
             for message in mbox:
