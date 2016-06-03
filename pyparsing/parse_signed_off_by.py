@@ -13,6 +13,6 @@ lessthan = Literal("<")
 greaterthan = Literal(">")
 email = lessthan + username + at + domain + greaterthan
 
-mark = Literal("Signed-off-by")
+signed_off_by_mark = Literal("Signed-off-by")
 colon = Literal(":")
-signed_off_by = mark + colon + name + email
+signed_off_by = signed_off_by_mark + colon + name + email
