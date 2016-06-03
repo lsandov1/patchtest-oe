@@ -2,7 +2,6 @@ from oemessage import OEMessage
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import match
-from oebase import info
 
 class OESignedOffBy(OEMessage):
 
@@ -10,7 +9,7 @@ class OESignedOffBy(OEMessage):
         self.mark = str(signed_off_by_mark).strip('"')
 
     def test_signed_off_by_presence(self):
-        """Test presence of 'Signed-off-by' string"""
+        """Test presence of 'Signed-off-by'"""
         for mbox in OESignedOffBy.mboxes:
             for message in mbox:
                 self.assertRegexpMatches(message.get_payload(), self.mark,
