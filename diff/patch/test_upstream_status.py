@@ -3,7 +3,7 @@ from parse_upstream_status import upstream_status, upstream_status_mark, upstrea
 from pyparsing import ParseException
 from re import search
 
-class OEUpstreamStatus(OEPatch):
+class OEPatchUpstreamStatus(OEPatch):
 
     @classmethod
     def setUpClassLocal(cls):
@@ -19,20 +19,20 @@ class OEUpstreamStatus(OEPatch):
 
     def test_upstream_status_presence(self):
         """Test presence of 'Upstream-Status' string"""
-        if not OEUpstreamStatus.newpatches:
+        if not OEPatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.mark)
 
-        for newpatch in OEUpstreamStatus.newpatches:
+        for newpatch in OEPatchUpstreamStatus.newpatches:
             self.assertRegexpMatches(str(newpatch),
                                      self.mark,
                                      "Patch (%s) must have a '%s', please include and send the series again" % (newpatch.path, self.mark))
 
     def test_upstream_status_valid_status(self):
         """Test format and status of 'Upstream-Status'"""
-        if not OEUpstreamStatus.newpatches:
+        if not OEPatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.mark)
 
-        for newpatch in OEUpstreamStatus.newpatches:
+        for newpatch in OEPatchUpstreamStatus.newpatches:
             for line in str(newpatch).splitlines():
                 if search(self.mark, line):
                     try:
