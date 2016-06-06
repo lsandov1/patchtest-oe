@@ -9,13 +9,20 @@ else
     TESTMBOX=$(realpath $TESTMBOX)
 fi
 
+# local variables
 CD=$(dirname $0)
 SELFTESTDIR=$(realpath $CD)
-PTSUITE=$(dirname $SELFTESTDIR)
+
+# variables exported to test scripts + TEST
+export PTSUITE=$(dirname $SELFTESTDIR)
+export TESTMBOX
+export PASS='PASS'
+export FAIL='FAIL'
 
 for script in $(find $PTSUITE -name '*.sh'); do
     # run all scripts except this script
     if [ -z "$(echo "$script" | sed -n -e '/selftest\/runner.sh/p')" ]; then
-	source $script
+	export TEST=$(echo $script | sed -e 's/\//./g' -e 's/^.*\.tests\./tests\./g' -e 's/\.sh//g')
+	$script
     fi
 done
