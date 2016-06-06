@@ -1,9 +1,12 @@
-from oepatch import OEPatch
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from oediff import OEDiff
+
 from parse_upstream_status import upstream_status, upstream_status_mark, upstream_status_valid_status
 from pyparsing import ParseException
 from re import search
 
-class OEPatchUpstreamStatus(OEPatch):
+class OEPatchUpstreamStatus(OEDiff):
 
     @classmethod
     def setUpClassLocal(cls):

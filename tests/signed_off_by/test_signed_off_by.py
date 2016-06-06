@@ -1,9 +1,11 @@
-from oemessage import OEMessage
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from oembox import OEMBox
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import match
 
-class OESignedOffBy(OEMessage):
+class OESignedOffBy(OEMBox):
 
     def setUp(self):
         self.mark = str(signed_off_by_mark).strip('"')

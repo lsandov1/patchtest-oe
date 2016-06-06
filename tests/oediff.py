@@ -3,13 +3,8 @@ import os
 from unidiff import PatchSet
 from patchtestdata import PatchTestInput as pti
 
-basepath = os.path.join(os.path.dirname(os.path.dirname(__file__)))
-pyparsepath = os.path.join(basepath, 'pyparsing')
-if not basepath in sys.path:
-    sys.path.insert(0, basepath)
-if not pyparsepath in sys.path:
-    sys.path.insert(0, pyparsepath)
-
+# insert root folder, so system can use base class
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__))))
 from oebase import OEBase
 
 class OEDiff(OEBase):

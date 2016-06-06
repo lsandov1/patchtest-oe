@@ -1,9 +1,12 @@
-from oepatch import OEPatch
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from oediff import OEDiff
+
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import search
 
-class OEPatchSignedOffBy(OEPatch):
+class OEPatchSignedOffBy(OEDiff):
 
     @classmethod
     def setUpClassLocal(cls):

@@ -1,6 +1,9 @@
-from oemessage import OEMessage
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-class OEPayload(OEMessage):
+from oembox import OEMBox
+
+class OEPayload(OEMBox):
 
     def test_payload_presence(self):
         """ Check that presence of message payload """

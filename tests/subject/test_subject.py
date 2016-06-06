@@ -1,8 +1,11 @@
-from oemessage import OEMessage
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+from oembox import OEMBox
 from parse_subject import subject
 from pyparsing import ParseException
 
-class OESubject(OEMessage):
+class OESubject(OEMBox):
 
     def test_subject_presence(self):
         """Test presence of 'Subject' field"""
