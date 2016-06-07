@@ -14,15 +14,17 @@ CD=$(dirname $0)
 SELFTESTDIR=$(realpath $CD)
 
 # variables exported to test scripts + TEST
-export PTSUITE=$(dirname $SELFTESTDIR)
-export TESTMBOX
-export PASS='PASS'
-export FAIL='FAIL'
+PTSUITE=$(dirname $SELFTESTDIR)
 
-for script in $(find $PTSUITE -name '*.sh'); do
-    # run all scripts except this script
-    if [ -z "$(echo "$script" | sed -n -e '/selftest\/runner.sh/p')" ]; then
-	export TEST=$(echo $script | sed -e 's/\//./g' -e 's/^.*\.tests\./tests\./g' -e 's/\.sh//g')
-	$script
-    fi
+source $SELFTESTDIR/librunner.sh
+
+for TESTPATH in $(find $PTSUITE -name '*.sh' | \
+                sed -n -e "/selftest/!p"); do
+
+    # convert a filepath into a test id
+    TESTID=$(testid $TESTPATH)
+
+    # execute the script
+    $TESTPATH $PTSUITE $TESTID $TESTMBOX
+
 done

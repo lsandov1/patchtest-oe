@@ -3,23 +3,19 @@
 # Script to test assertions for test_payload.py
 #
 
-test_payload_presence() {
-    MBOX=$1
-    EXPECTED_RESULT=$2
-    TESTRESULT=$(patchtest --test-dir $PTSUITE -m $MBOX --no-patch | \
-	sed -n -e "/$TEST/p")
+PTSUITE=$1
+TEST=$2
+TESTMBOX=$3
 
-    if [ -z "$(echo "$TESTRESULT" | sed -n -e "/$EXPECTED_RESULT/p")" ]; then
-        echo "$TESTRESULT $EXPECTED_RESULT"
-    fi
-}
+# source the runner's lib, containing function definitions
+source $PTSUITE/selftest/librunner.sh
 
 # test pass
-test_payload_presence $TESTMBOX $PASS
+exec_patchtest $TESTMBOX $PASS
 
 # test fail
-NOPAYLOAD=$(mktemp)
-sed -e '/^$/q' $TESTMBOX > $NOPAYLOAD
-test_payload_presence $NOPAYLOAD $FAIL
-rm $NOPAYLOAD
+TMP=$(mktemp)
+sed -e '/^$/q' $TESTMBOX > $TMP
+exec_patchtest $TMP $FAIL
+rm $TMP
 
