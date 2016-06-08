@@ -4,18 +4,21 @@
 #
 
 PTSUITE=$1
-TEST=$2
+TESTDIR=$2
 TESTMBOX=$3
 
 # source the runner's lib, containing function definitions
 source $PTSUITE/selftest/librunner.sh
 
-# test pass
-exec_patchtest $TESTMBOX $PASS
+test_payload_presence() {
+    # test pass
+    exec_patchtest $TESTDIR $FUNCNAME $TESTMBOX $PASS
 
-# test fail
-TMP=$(mktemp)
-sed -e '/^$/q' $TESTMBOX > $TMP
-exec_patchtest $TMP $FAIL
-rm $TMP
+    # # test fail
+    # TMP=$(mktemp)
+    # sed -e '/^$/q' $TESTMBOX > $TMP
+    # exec_patchtest $TESTDIR $FUNCNAME $TMP $FAIL
+    # rm $TMP
+}
 
+test_payload_presence

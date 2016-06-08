@@ -2,28 +2,19 @@
 PASS='PASS'
 FAIL='FAIL'
 
-# functions
-
 #
 # Execute patchtest and compare current result with expected result.
-# On error, print the test. It expects PTSUITE and TEST variables
-# already defined
 #
 exec_patchtest() {
-    MBOX=$1
-    EXPECTED_RESULT=$2
+    local TESTDIR=$1
+    local TESTID=$2
+    local TESTMBOX=$3
+    local EXPECTED=$4
 
-    TESTRESULT=$(patchtest --test-dir $PTSUITE -m $MBOX --no-patch | \
-	sed -n -e "/$TEST/p")
-
-    if [ -z "$(echo "$TESTRESULT" | sed -n -e "/$EXPECTED_RESULT/p")" ]; then
-        echo "$TESTRESULT $EXPECTED_RESULT"
-    fi
+    # in case of failure, this RESULT will be blank
+    RESULT=$(patchtest --test-dir $TESTDIR -m $TESTMBOX --no-patch | \
+	sed -n -e "/$TESTID/p" | \
+	sed -n -e "/$EXPECTED/p")
+    [ -z "${RESULT}" ] && { echo "$RESULT $EXPECTED"; }
 }
 
-# convert a filepath into a python unittest id
-testid() {
-    echo $1 | sed -e 's/\//./g' \
-	          -e 's/^.*\.tests\./tests\./g' \
-                  -e 's/\.sh//g'
-}

@@ -21,10 +21,10 @@ source $SELFTESTDIR/librunner.sh
 for TESTPATH in $(find $PTSUITE -name '*.sh' | \
                 sed -n -e "/selftest/!p"); do
 
-    # convert a filepath into a test id
-    TESTID=$(testid $TESTPATH)
+    # test case directory
+    TESTDIR=$(dirname $TESTPATH)
 
-    # execute the script
-    $TESTPATH $PTSUITE $TESTID $TESTMBOX
+    echo "Executing $TESTPATH"
+    $TESTPATH $PTSUITE $TESTDIR $TESTMBOX
 
 done
