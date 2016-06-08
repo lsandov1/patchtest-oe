@@ -7,7 +7,7 @@ TESTMBOX=$3
 # source the runner's lib, containing function definitions
 source $PTSUITE/selftest/librunner.sh
 
-test_signed_off_presence() {
+test_signed_off_by_presence() {
     # test pass
     exec_patchtest $TESTDIR $FUNCNAME $TESTMBOX $PASS
 
@@ -35,5 +35,5 @@ test_signed_off_by_format() {
     rm $TMP
 }
 
-test_signed_off_presence
+test_signed_off_by_presence
 test_signed_off_by_format

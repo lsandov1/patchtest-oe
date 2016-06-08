@@ -24,7 +24,8 @@ for TESTPATH in $(find $PTSUITE -name '*.sh' | \
     # test case directory
     TESTDIR=$(dirname $TESTPATH)
 
-    echo "Executing $TESTPATH"
-    $TESTPATH $PTSUITE $TESTDIR $TESTMBOX
+    CMD="$TESTPATH $PTSUITE $TESTDIR $TESTMBOX"
+    echo "Executing $CMD"
+    $CMD
 
 done

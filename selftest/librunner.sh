@@ -15,6 +15,6 @@ exec_patchtest() {
     RESULT=$(patchtest --test-dir $TESTDIR -m $TESTMBOX --no-patch | \
 	sed -n -e "/$TESTID/p" | \
 	sed -n -e "/$EXPECTED/p")
-    [ -z "${RESULT}" ] && { echo "$RESULT $EXPECTED"; }
+    [ -z "${RESULT}" ] && { echo "$TESTDIR $TESTID $EXPECTED"; }
 }
 

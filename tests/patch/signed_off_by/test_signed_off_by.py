@@ -26,15 +26,15 @@ class OEPatchSignedOffBy(OEDiff):
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.mark)
 
         for newpatch in OEPatchSignedOffBy.newpatches:
-            self.assertRegexpMatches(str(newpatch), self.mark,
+            self.assertRegexpMatches(str(newpatch), "(?<=\+)%s" % self.mark,
                                      "Patch must be signed-off, please git configure your name/email and commit your changes with git commit --signoff")
 
     def test_signed_off_by_format(self):
         """Test 'Signed-off-by' format on patch"""
         for newpatch in OEPatchSignedOffBy.newpatches:
             payload = str(newpatch)
-            if not payload:
-                self.skipTest('Empty patch payload, no reason to execute signed-off-by format tests')
+            if not payload or not search("(?<=\+)%s" % self.mark, payload):
+                self.skipTest("%s not present, skipping format test" % self.mark)
             for line in payload.splitlines():
                 if search(self.mark, line):
                     try:
