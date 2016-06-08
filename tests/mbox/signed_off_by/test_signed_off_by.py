@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from oembox import OEMBox
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
