@@ -14,11 +14,11 @@ test_payload_presence() {
     # test pass
     exec_patchtest $TESTDIR $FUNCNAME $TESTMBOX $PASS
 
-    # # test fail
-    # TMP=$(mktemp)
-    # sed -e '/^$/q' $TESTMBOX > $TMP
-    # exec_patchtest $TESTDIR $FUNCNAME $TMP $FAIL
-    # rm $TMP
+    # test fail
+    TMP=$(mktemp)
+    sed -e '/^$/q' $TESTMBOX > $TMP
+    exec_patchtest $TESTDIR $FUNCNAME $TMP $FAIL
+    rm $TMP
 }
 
 test_payload_presence
