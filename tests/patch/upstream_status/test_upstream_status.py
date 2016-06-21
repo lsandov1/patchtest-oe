@@ -4,7 +4,8 @@ from oediff import OEDiff
 
 from parse_upstream_status import upstream_status, upstream_status_mark, upstream_status_valid_status
 from pyparsing import ParseException
-from re import search
+from re import compile, search
+import patchmsg as msg
 
 class OEPatchUpstreamStatus(OEDiff):
 
@@ -20,28 +21,31 @@ class OEPatchUpstreamStatus(OEDiff):
     def setUp(self):
         self.mark = str(upstream_status_mark).strip('"')
 
+        # match self.mark with '+' preceding it
+        self.prog = compile("(?<=\+)%s" % self.mark)
+
     def test_upstream_status_presence(self):
-        """Test presence of 'Upstream-Status' string"""
         if not OEPatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.mark)
 
         for newpatch in OEPatchUpstreamStatus.newpatches:
-            self.assertRegexpMatches(str(newpatch),
-                                     self.mark,
-                                     "Patch (%s) must have a '%s', please include and send the series again" % (newpatch.path, self.mark))
+            payload = str(newpatch)
+            if not self.prog.search(payload):
+                self.fail(self.formaterror(msg.test_upstream_status_presence.reason,
+                                           msg.test_upstream_status_presence.error,
+                                           msg.test_upstream_status_presence.fix))
 
     def test_upstream_status_valid_status(self):
-        """Test format and status of 'Upstream-Status'"""
         if not OEPatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.mark)
 
         for newpatch in OEPatchUpstreamStatus.newpatches:
             for line in str(newpatch).splitlines():
-                if search(self.mark, line):
+                if self.prog.search(line):
                     try:
                         upstream_status.parseString(line.lstrip('+'))
                     except ParseException as pe:
-                        valid_status = '|'.join([str(s).strip('"') for s in upstream_status_valid_status])
-                        self.fail("Upstream-Status has wrong format or status value, please correct it and send the series again. 'Upstream-Status: [%s]'" %
-                                  valid_status)
+                        self.fail(self.formaterror(msg.test_upstream_status_valid_status.reason,
+                                                   msg.test_upstream_status_valid_status.error,
+                                                   msg.test_upstream_status_valid_status.fix))
 

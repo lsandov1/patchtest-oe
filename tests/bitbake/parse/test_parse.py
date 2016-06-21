@@ -2,10 +2,11 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from oediff import OEDiff
 from patchtestdata import PatchTestInput as pti
-from subprocess import check_output, CalledProcessError
+from subprocess import check_output, CalledProcessError, STDOUT
 from os.path import basename
 from re import compile
 from oebase import warn
+import bitbakemsg as msg
 
 def bitbake_check_output(args):
     bitbake_cmd = 'bitbake %s' % ' '.join(args)
@@ -14,7 +15,7 @@ def bitbake_check_output(args):
     cmd = 'cd %s;source %s/oe-init-build-env;%s' % (pti.repodir,
                                                     pti.repodir,
                                                     bitbake_cmd)
-    return check_output(cmd, shell=True)
+    return check_output(cmd, stderr=STDOUT, shell=True)
 
 class OEBitbakeParse(OEDiff):
 
@@ -25,46 +26,47 @@ class OEBitbakeParse(OEDiff):
         # get just those patches touching python files
         for patchset in cls.patchsets:
             for patch in patchset:
-                if patch.path.endswith('.bb'):
+                if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
                     if patch.is_added_file:
                         cls.newrecipes.append(patch)
                     elif patch.is_modified_file:
                         cls.modifiedrecipes.append(patch)
 
     def pretest_bitbake_parse(self):
-        """Bitbake parse on non-modified repo"""
         try:
             bitbake_check_output(['-p'])
         except CalledProcessError as e:
-            self.fail('Bitbake parsing failed on non-patched repo: %s' % e.output)
+            raise self.fail(self.formaterror(msg.pretest_bitbake_parse.reason,
+                                             msg.pretest_bitbake_parse.error,
+                                             msg.pretest_bitbake_parse.fix))
 
     def test_bitbake_parse(self):
-        """Bitbake parse on modified repo"""
         try:
             bitbake_check_output(['-p'])
         except CalledProcessError as e:
-            self.fail('Bitbake parsing failed on patched repo: %s' % e.output)
+            raise self.fail(self.formaterror(msg.test_bitbake_parse.reason,
+                                             msg.test_bitbake_parse.error,
+                                             msg.test_bitbake_parse.fix))
 
     def pretest_bitbake_environment(self):
-        """Show bitbake environment on non-modified repo"""
         try:
             bitbake_check_output(['-e'])
         except CalledProcessError as e:
-            self.fail('Bitbake environment failed on patched repo: %s' % e.output)
+            raise self.fail(self.formaterror(msg.pretest_bitbake_environment.reason,
+                                             msg.pretest_bitbake_environment.error,
+                                             msg.pretest_bitbake_environment.fix))
 
     def test_bitbake_environment(self):
-        """Show bitbake environment on modified repo"""
         try:
             bitbake_check_output(['-e'])
         except CalledProcessError as e:
-            self.fail('Bitbake environment failed on patched repo: %s' % e.output)
+            raise self.fail(self.formaterrror(msg.test_bitbake_environment.reason,
+                                              msg.test_bitbake_environment.error,
+                                              msg.test_bitbake_environment.fix))
 
     def pretest_bitbake_environment_on_target(self):
-        """Show target's bitbake environment on non-modified repo"""
-        # Skip this test if patch changes apply on target (recipes)
-        # already present
         if not OEBitbakeParse.modifiedrecipes:
-            self.skipTest('No previous bitbake targets to parse')
+            self.skipTest(msg.bitbake.patch_has_no_bbfiles)
 
         prog = compile("(?P<pn>^[a-zA-Z]+)")
         pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.modifiedrecipes]
@@ -78,10 +80,11 @@ class OEBitbakeParse(OEDiff):
                 try:
                     bitbake_check_output(['-e', pn])
                 except CalledProcessError as e:
-                    self.fail('Target bitbake environment failed on patched repo: %s' % e.output)
+                    raise self.fail(self.formaterror(msg.pretest_bitbake_environment_on_target.reason,
+                                                     msg.pretest_bitbake_environment_on_target.error,
+                                                     msg.pretest_bitbake_environment_on_target.fix))
 
     def test_bitbake_environment_on_target(self):
-        """Show target's bitbake environment on modified repo"""
         prog = compile("(?P<pn>^[a-zA-Z]+)")
         pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.modifiedrecipes]
         pn_list = [(pn_pv, prog.match(pn_pv)) for pn_pv in pn_pv_list]
@@ -94,5 +97,7 @@ class OEBitbakeParse(OEDiff):
                 try:
                     bitbake_check_output(['-e', pn])
                 except CalledProcessError as e:
-                    self.fail('Target bitbake environment failed on patched repo: %s' % e.output)
+                    raise self.fail(self.formaterror(msg.test_bitbake_environment_on_target.reason,
+                                                     msg.test_bitbake_environment_on_target.error,
+                                                     msg.test_bitbake_environment_on_target.fix))
 

@@ -3,6 +3,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from oediff import OEDiff
 from pylint import epylint as lint
 from re import sub
+import pythonmsg as msg
 
 from patchtestdata import PatchTestDataStore as d
 
@@ -28,7 +29,6 @@ class OEPyLint(OEDiff):
             d['pylint_pretest'].extend(pylint_stdout.readlines())
 
     def test_pylint(self):
-        """(Python)Lint modified python files"""
         if not OEPyLint.pythonpatches:
             self.skipTest('No python related patches, skipping test')
 
@@ -45,6 +45,12 @@ class OEPyLint(OEDiff):
         while pretest:
             test.remove(pretest.pop(0))
 
-        # it test is empty, then pylint did not complain on the new python code
-        self.assertFalse(test, 'pylint complains %s' % ' '.join(test))
+        # it test is non-empty, then pylint complained on the new python code
+        if test:
+            #TODO: 1. Include the line number on test items
+            #      2. Better test format
+            self.fail(self.formaterror(msg.test_pylint.reason,
+                                       msg.test_pylint.error,
+                                       msg.test_pylint.fix,
+                                       data=str(test)))
 
