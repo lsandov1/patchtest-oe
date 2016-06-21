@@ -1,0 +1,4 @@
+* All fail test with TODO string as exception message
+* Check mbox subject length
+* review text on msg folder
+* create unit tests againts each test (check selftest/runner and .sh files)
