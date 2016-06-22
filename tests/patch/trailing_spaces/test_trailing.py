@@ -11,4 +11,5 @@ class OETrailingSpaces(OEDiff):
         # but this does match those lines with just \s chars
         self.fail(self.formaterror(msg.test_patch_trailing_spaces.reason,
                                    msg.test_patch_trailing_spaces.error,
-                                   msg.test_patch_trailing_spaces.fix))
+                                   msg.test_patch_trailing_spaces.fix,
+                                   status='TODO'))
