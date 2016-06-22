@@ -1,22 +1,21 @@
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from oediff import OEDiff
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+from oebase import OEBase, info, error
 from pylint import epylint as lint
 from re import sub
 import pythonmsg as msg
 
 from patchtestdata import PatchTestDataStore as d
 
-class OEPyLint(OEDiff):
+class OEPyLint(OEBase):
 
     @classmethod
     def setUpClassLocal(cls):
         cls.pythonpatches = []
         # get just those patches touching python files
-        for patchset in cls.patchsets:
-            for patch in patchset:
-                if patch.path.endswith('.py'):
-                    cls.pythonpatches.append(patch)
+        for patch in cls.patchset:
+            if patch.path.endswith('.py'):
+                cls.pythonpatches.append(patch)
 
     def pretest_pylint(self):
         """(Python)Lint non-modified python files"""

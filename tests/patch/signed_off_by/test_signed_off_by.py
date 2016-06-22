@@ -1,22 +1,20 @@
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from oediff import OEDiff
-
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+from oebase import OEBase,info
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import compile
 import patchmsg as msg
 
-class OEPatchSignedOffBy(OEDiff):
+class OEPatchSignedOffBy(OEBase):
 
     @classmethod
     def setUpClassLocal(cls):
         cls.newpatches = []
         # get just those relevant patches: new software patches
-        for patchset in cls.patchsets:
-            for patch in patchset:
-                if patch.path.endswith('.patch') and patch.is_added_file:
-                    cls.newpatches.append(patch)
+        for patch in cls.patchset:
+            if patch.path.endswith('.patch') and patch.is_added_file:
+                cls.newpatches.append(patch)
 
     def setUp(self):
         self.mark = str(signed_off_by_mark).strip('"')

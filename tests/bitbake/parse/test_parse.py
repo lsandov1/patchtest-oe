@@ -1,11 +1,11 @@
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from oediff import OEDiff
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+from oebase import warn, OEBase
 from patchtestdata import PatchTestInput as pti
 from subprocess import check_output, CalledProcessError, STDOUT
 from os.path import basename
 from re import compile
-from oebase import warn
+
 import bitbakemsg as msg
 
 def bitbake_check_output(args):
@@ -17,20 +17,19 @@ def bitbake_check_output(args):
                                                     bitbake_cmd)
     return check_output(cmd, stderr=STDOUT, shell=True)
 
-class OEBitbakeParse(OEDiff):
+class OEBitbakeParse(OEBase):
 
     @classmethod
     def setUpClassLocal(cls):
         cls.newrecipes = []
         cls.modifiedrecipes = []
         # get just those patches touching python files
-        for patchset in cls.patchsets:
-            for patch in patchset:
-                if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
-                    if patch.is_added_file:
-                        cls.newrecipes.append(patch)
-                    elif patch.is_modified_file:
-                        cls.modifiedrecipes.append(patch)
+        for patch in cls.patchset:
+            if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
+                if patch.is_added_file:
+                    cls.newrecipes.append(patch)
+                elif patch.is_modified_file:
+                    cls.modifiedrecipes.append(patch)
 
     def pretest_bitbake_parse(self):
         try:
