@@ -1,1 +1,1 @@
-tests/oembox.py
+../tests/oembox.py
