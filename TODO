@@ -1,4 +1,5 @@
-* All fail test with TODO string as exception message
-* Check mbox subject length
-* review text on msg folder
-* create unit tests againts each test (check selftest/runner and .sh files)
+* Test cases from the folder 'todo' has not being implemented: all these fail
+* tests/mbox/subject/test_subject.py: Check subject length
+* Create a set of patches that are intended to assert test cases
+* POSTing code should moved from patchtest to patchtest-oe, including jinja2 template
+* Automatic patch testing code should be moved from patchtest to patchtest-oe (scripts/run-patchtest.sh)
