@@ -16,6 +16,17 @@ $ git clone ssh://git@git.yoctoproject.org/patchtest
 $ git clone ssh://git@git.yoctoproject.org/patchtest-oe
 ----
 
+Install patchtest-oe requirements
+[NOTE]
+You can use your distribution package manager instead of pip to install
+the requirements
+
+[source,shell]
+----
+$ cd <path to your patchtest-oe folder>
+$ pip install -r requirements.txt
+----
+
 Create a local folder where you can create new links pointing to the tools
 ('patchtest' and 'git-pw')
 
