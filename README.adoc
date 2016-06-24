@@ -1,0 +1,88 @@
+== patchtest-oe: A Test Suite for testing OE-Core patches
+
+A test suite intended to be executed by patchtest. Tests are targeted for the
+https://www.yoctoproject.org[Yocto Project] but currently focused on patches that get
+into the OE-Core http://lists.openembedded.org/mailman/listinfo/openembedded-core[mailing list]
+
+[[installation]]
+=== Installation
+
+Clone the tools:
+
+[source,shell]
+----
+$ git clone https://github.com/dlespiau/patchwork.git
+$ git clone ssh://git@git.yoctoproject.org/patchtest
+$ git clone ssh://git@git.yoctoproject.org/patchtest-oe
+----
+
+Create a local folder where you can create new links pointing to the tools
+('patchtest' and 'git-pw')
+
+[source,shell]
+----
+$ mkdir $HOME/bin
+$ ln -s <full path to your patchwork folder>/git-pw/git-pw $HOME/bin
+$ ln -s <full path to your patchtest folder>/patchtest $HOME/bin
+$ export PATH="$PATH:$HOME/bin"
+----
+
+Clone the poky project
+[NOTE]
+You can clone any other project that is monitored by patchwork, but
+this test suite check patches targeted for OE-Core project.
+
+[source,shell]
+----
+$ git clone http://git.yoctoproject.org/git/poky
+----
+
+[[usage]]
+=== Usage
+
+patchtest can accept a **single** patch from stdin
+
+[source,shell]
+----
+$ cd <your path to poky>
+$ git format-patch -1 --stdout | patchtest - --test-dir <path to your patchtest-oe folder>
+----
+
+Or as a command line argument
+
+[source,shell]
+----
+$ cd <your path to poky>
+$ git format-patch -1 --stdout > head.patch
+$ patchtest head.patch --test-dir <path to your patchtest-oe folder>
+----
+
+New upstream patches can also be tested using git-pw as a fetching tool, but first you need to configure
+your poky repository
+
+[source,shell]
+----
+$ cd <your path to poky>
+$ git config patchwork.default.url http://patchwork-next.openembedded.org
+$ git config patchwork.default.project oe-core
+----
+
+you can now fetch patches (or series) from patchwork and test them
+
+[source,shell]
+----
+$ git pw mbox 157 | patchtest - --test-dir <path to your patchtest-oe folder>
+----
+
+=== Implementing new test cases
+
+patchtest is a simple framework that takes the patch and apply on the correspoding repo. Test cases
+can be executed before and after the patch is applied, depending on the test case prefix
+('pretest_' or 'test_'). Patchtest uses the unittest python module, so any test suite should use the
+same module. Patchtest exposes the command line arguments to the test suite, so the patch filename
+is available (thus its contents). For a better undestanding, check 'todo/sample' folder.
+
+Lastly, tests prefixed with 'todo' are test cases under development, so any contribution to these tests
+or new ones are welcome, just send your patches to the 'yocto@yoctoproject.org' and prefix the subject
+with '[patchtest-oe]'.
+
