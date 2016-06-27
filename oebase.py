@@ -16,9 +16,13 @@ warn=logger.warn
 error=logger.error
 
 class OEBase(TestCase):
-    def formaterror(self, reason, error, fix, data='', status='FAIL'):
+    def formaterror(self, reason, error, fix, cmd='', result='FAIL', stdout='', returncode=0, data=''):
         """Encodes failure data passed to the testing framework"""
-        return dumps({'status': status,
+        return dumps({'result': result,
+                      'id': self.id(),
+                      'cmd': cmd,
+                      'stdout': stdout,
+                      'return': returncode,
                       'reason': reason,
                       'error' : error,
                       'fix'   : fix,

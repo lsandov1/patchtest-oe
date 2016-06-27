@@ -31,13 +31,20 @@ class OEBitbakeParse(OEBase):
                 elif patch.is_modified_file:
                     cls.modifiedrecipes.append(patch)
 
+        # regex to extract the recipe name on a recipe filename
+        cls.reciperegex = compile("(?P<pn>^[a-zA-Z-]+)")
+
     def pretest_bitbake_parse(self):
         try:
             bitbake_check_output(['-p'])
         except CalledProcessError as e:
             raise self.fail(self.formaterror(msg.pretest_bitbake_parse.reason,
                                              msg.pretest_bitbake_parse.error,
-                                             msg.pretest_bitbake_parse.fix))
+                                             msg.pretest_bitbake_parse.fix,
+                                             cmd=e.cmd,
+                                             stdout=e.output,
+                                             returncode=e.returncode))
+
 
     def test_bitbake_parse(self):
         try:
@@ -45,7 +52,11 @@ class OEBitbakeParse(OEBase):
         except CalledProcessError as e:
             raise self.fail(self.formaterror(msg.test_bitbake_parse.reason,
                                              msg.test_bitbake_parse.error,
-                                             msg.test_bitbake_parse.fix))
+                                             msg.test_bitbake_parse.fix,
+                                             cmd=e.cmd,
+                                             stdout=e.output,
+                                             returncode=e.returncode))
+
 
     def pretest_bitbake_environment(self):
         try:
@@ -53,7 +64,10 @@ class OEBitbakeParse(OEBase):
         except CalledProcessError as e:
             raise self.fail(self.formaterror(msg.pretest_bitbake_environment.reason,
                                              msg.pretest_bitbake_environment.error,
-                                             msg.pretest_bitbake_environment.fix))
+                                             msg.pretest_bitbake_environment.fix,
+                                             cmd=e.cmd,
+                                             stdout=e.output,
+                                             returncode=e.returncode))
 
     def test_bitbake_environment(self):
         try:
@@ -61,15 +75,17 @@ class OEBitbakeParse(OEBase):
         except CalledProcessError as e:
             raise self.fail(self.formaterrror(msg.test_bitbake_environment.reason,
                                               msg.test_bitbake_environment.error,
-                                              msg.test_bitbake_environment.fix))
+                                              msg.test_bitbake_environment.fix,
+                                              cmd=e.cmd,
+                                              stdout=e.output,
+                                              returncode=e.returncode))
 
     def pretest_bitbake_environment_on_target(self):
         if not OEBitbakeParse.modifiedrecipes:
             self.skipTest(msg.bitbake.patch_has_no_bbfiles)
 
-        prog = compile("(?P<pn>^[a-zA-Z]+)")
         pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.modifiedrecipes]
-        pn_list = [(pn_pv, prog.match(pn_pv)) for pn_pv in pn_pv_list]
+        pn_list = [(pn_pv, OEBitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
             if not match:
@@ -81,12 +97,15 @@ class OEBitbakeParse(OEBase):
                 except CalledProcessError as e:
                     raise self.fail(self.formaterror(msg.pretest_bitbake_environment_on_target.reason,
                                                      msg.pretest_bitbake_environment_on_target.error,
-                                                     msg.pretest_bitbake_environment_on_target.fix))
+                                                     msg.pretest_bitbake_environment_on_target.fix,
+                                                     cmd=e.cmd,
+                                                     stdout=e.output,
+                                                     returncode=e.returncode))
+
 
     def test_bitbake_environment_on_target(self):
-        prog = compile("(?P<pn>^[a-zA-Z]+)")
         pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.modifiedrecipes]
-        pn_list = [(pn_pv, prog.match(pn_pv)) for pn_pv in pn_pv_list]
+        pn_list = [(pn_pv, OEBitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
             if not match:
@@ -98,5 +117,9 @@ class OEBitbakeParse(OEBase):
                 except CalledProcessError as e:
                     raise self.fail(self.formaterror(msg.test_bitbake_environment_on_target.reason,
                                                      msg.test_bitbake_environment_on_target.error,
-                                                     msg.test_bitbake_environment_on_target.fix))
+                                                     msg.test_bitbake_environment_on_target.fix,
+                                                     cmd=e.cmd,
+                                                     stdout=e.output,
+                                                     returncode=e.returncode))
+
 
