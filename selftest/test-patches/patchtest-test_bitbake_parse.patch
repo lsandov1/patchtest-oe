@@ -1,0 +1,28 @@
+From db6b9722a8af6a5d78512bea70a8df507d092dd1 Mon Sep 17 00:00:00 2001
+From: Leonardo Sandoval <leonardo.sandoval.gonzalez@linux.intel.com>
+Date: Thu, 30 Jun 2016 09:22:16 -0500
+Subject: [PATCH] patchtest: test_bitbake_parse
+
+Signed-off-by: Leonardo Sandoval <leonardo.sandoval.gonzalez@linux.intel.com>
+---
+ meta/recipes-pachtest/example/patchtest-example_1.0.bb | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 meta/recipes-pachtest/example/patchtest-example_1.0.bb
+
+diff --git a/meta/recipes-pachtest/example/patchtest-example_1.0.bb b/meta/recipes-pachtest/example/patchtest-example_1.0.bb
+new file mode 100644
+index 0000000..8e08c44
+--- /dev/null
++++ b/meta/recipes-pachtest/example/patchtest-example_1.0.bb
+@@ -0,0 +1,7 @@
++SUMMARY = "useradd test A"
++LICENSE = "MIT"
++LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=4d92cd373abda3937c2bc47fbc49d690 \
++                    file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
++ALLOW_EMPTY_${PN} = "1"
++
++DESCRIPTION
+\ No newline at end of file
+-- 
+2.6.6
+
