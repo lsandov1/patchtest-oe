@@ -6,8 +6,6 @@ from subprocess import check_output, CalledProcessError, STDOUT
 from os.path import basename
 from re import compile
 
-import bitbakemsg as msg
-
 def bitbake_check_output(args):
     bitbake_cmd = 'bitbake %s' % ' '.join(args)
 
@@ -17,12 +15,16 @@ def bitbake_check_output(args):
                                                     bitbake_cmd)
     return check_output(cmd, stderr=STDOUT, shell=True)
 
+def formatdata(e):
+    return list([('Command', e.cmd), ('Output', e.output), ('Return Code', e.returncode)])
+
 class OEBitbakeParse(OEBase):
 
     @classmethod
     def setUpClassLocal(cls):
         cls.newrecipes = []
         cls.modifiedrecipes = []
+        cls.recipes = []
         # get just those patches touching python files
         for patch in cls.patchset:
             if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
@@ -31,6 +33,9 @@ class OEBitbakeParse(OEBase):
                 elif patch.is_modified_file:
                     cls.modifiedrecipes.append(patch)
 
+        cls.recipes.extend(cls.newrecipes)
+        cls.recipes.extend(cls.modifiedrecipes)
+
         # regex to extract the recipe name on a recipe filename
         cls.reciperegex = compile("(?P<pn>^[a-zA-Z-]+)")
 
@@ -38,53 +43,31 @@ class OEBitbakeParse(OEBase):
         try:
             bitbake_check_output(['-p'])
         except CalledProcessError as e:
-            raise self.fail(self.formaterror(msg.pretest_bitbake_parse.reason,
-                                             msg.pretest_bitbake_parse.error,
-                                             msg.pretest_bitbake_parse.fix,
-                                             cmd=e.cmd,
-                                             stdout=e.output,
-                                             returncode=e.returncode))
-
+            raise self.fail(formatdata(e))
 
     def test_bitbake_parse(self):
         try:
             bitbake_check_output(['-p'])
         except CalledProcessError as e:
-            raise self.fail(self.formaterror(msg.test_bitbake_parse.reason,
-                                             msg.test_bitbake_parse.error,
-                                             msg.test_bitbake_parse.fix,
-                                             cmd=e.cmd,
-                                             stdout=e.output,
-                                             returncode=e.returncode))
-
+            raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment(self):
         try:
             bitbake_check_output(['-e'])
         except CalledProcessError as e:
-            raise self.fail(self.formaterror(msg.pretest_bitbake_environment.reason,
-                                             msg.pretest_bitbake_environment.error,
-                                             msg.pretest_bitbake_environment.fix,
-                                             cmd=e.cmd,
-                                             stdout=e.output,
-                                             returncode=e.returncode))
+            raise self.fail(formatdata(e))
 
     def test_bitbake_environment(self):
         try:
             bitbake_check_output(['-e'])
         except CalledProcessError as e:
-            raise self.fail(self.formaterrror(msg.test_bitbake_environment.reason,
-                                              msg.test_bitbake_environment.error,
-                                              msg.test_bitbake_environment.fix,
-                                              cmd=e.cmd,
-                                              stdout=e.output,
-                                              returncode=e.returncode))
+            raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment_on_target(self):
         if not OEBitbakeParse.modifiedrecipes:
-            self.skipTest(msg.bitbake.patch_has_no_bbfiles)
+            self.skipTest("Patch data does not modified any bb or bbappend file")
 
-        pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.modifiedrecipes]
+        pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.recipes]
         pn_list = [(pn_pv, OEBitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
@@ -95,16 +78,10 @@ class OEBitbakeParse(OEBase):
                 try:
                     bitbake_check_output(['-e', pn])
                 except CalledProcessError as e:
-                    raise self.fail(self.formaterror(msg.pretest_bitbake_environment_on_target.reason,
-                                                     msg.pretest_bitbake_environment_on_target.error,
-                                                     msg.pretest_bitbake_environment_on_target.fix,
-                                                     cmd=e.cmd,
-                                                     stdout=e.output,
-                                                     returncode=e.returncode))
-
+                    raise self.fail(formatdata(e))
 
     def test_bitbake_environment_on_target(self):
-        pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.modifiedrecipes]
+        pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.recipes]
         pn_list = [(pn_pv, OEBitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
@@ -115,11 +92,5 @@ class OEBitbakeParse(OEBase):
                 try:
                     bitbake_check_output(['-e', pn])
                 except CalledProcessError as e:
-                    raise self.fail(self.formaterror(msg.test_bitbake_environment_on_target.reason,
-                                                     msg.test_bitbake_environment_on_target.error,
-                                                     msg.test_bitbake_environment_on_target.fix,
-                                                     cmd=e.cmd,
-                                                     stdout=e.output,
-                                                     returncode=e.returncode))
-
+                    raise self.fail(formatdata(e))
 

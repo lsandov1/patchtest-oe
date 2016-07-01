@@ -4,7 +4,6 @@ from oebase import OEBase,info
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import compile
-import patchmsg as msg
 
 class OEPatchSignedOffBy(OEBase):
 
@@ -16,34 +15,29 @@ class OEPatchSignedOffBy(OEBase):
             if patch.path.endswith('.patch') and patch.is_added_file:
                 cls.newpatches.append(patch)
 
-    def setUp(self):
-        self.mark = str(signed_off_by_mark).strip('"')
+        cls.mark = str(signed_off_by_mark).strip('"')
 
-        # match self.mark with '+' preceding it
-        self.prog = compile("(?<=\+)%s" % self.mark)
+        # match OEPatchSignedOffBy.mark with '+' preceding it
+        cls.prog = compile("(?<=\+)%s" % cls.mark)
 
     def test_signed_off_by_presence(self):
         if not OEPatchSignedOffBy.newpatches:
-            self.skipTest("There are no new software patches, no reason to test %s presence" % self.mark)
+            self.skipTest("There are no new software patches, no reason to test %s presence" % OEPatchSignedOffBy.mark)
 
         for newpatch in OEPatchSignedOffBy.newpatches:
             payload = str(newpatch)
-            if not self.prog.search(payload):
-                self.fail(self.formaterror(msg.test_signed_off_by_presence.reason,
-                                           msg.test_signed_off_by_presence.error,
-                                           msg.test_signed_off_by_presence.fix))
+            if not OEPatchSignedOffBy.prog.search(payload):
+                self.fail()
 
     def test_signed_off_by_format(self):
         for newpatch in OEPatchSignedOffBy.newpatches:
             payload = str(newpatch)
-            if not payload or not self.prog.search(payload):
-                self.skipTest("%s not present, skipping format test" % self.mark)
+            if not payload or not OEPatchSignedOffBy.prog.search(payload):
+                self.skipTest("%s not present, skipping format test" % OEPatchSignedOffBy.mark)
             for line in payload.splitlines():
-                if self.prog.search(line):
+                if OEPatchSignedOffBy.prog.search(line):
                     try:
                         signed_off_by.parseString(line.lstrip('+'))
                     except ParseException as pe:
-                            self.fail(self.formaterror(msg.test_signed_off_by_format.reason,
-                                                       msg.test_signed_off_by_format.error,
-                                                       msg.test_signed_off_by_format.fix))
+                            self.fail([('Parse Exception', str(pe))])
 

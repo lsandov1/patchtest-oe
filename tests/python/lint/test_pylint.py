@@ -3,7 +3,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirna
 from oebase import OEBase, info, error
 from pylint import epylint as lint
 from re import sub
-import pythonmsg as msg
 
 from patchtestdata import PatchTestDataStore as d
 
@@ -24,8 +23,10 @@ class OEPyLint(OEBase):
 
         d['pylint_pretest'] = list()
         for pythonpatch in OEPyLint.pythonpatches:
-            (pylint_stdout, pylint_stderr) = lint.py_run(pythonpatch.path, return_std=True)
-            d['pylint_pretest'].extend(pylint_stdout.readlines())
+            # run pylint just on modified files
+            if pythonpatch.is_modified_file:
+                (pylint_stdout, pylint_stderr) = lint.py_run(pythonpatch.path, return_std=True)
+                d['pylint_pretest'].extend(pylint_stdout.readlines())
 
     def test_pylint(self):
         if not OEPyLint.pythonpatches:
@@ -48,8 +49,5 @@ class OEPyLint(OEBase):
         if test:
             #TODO: 1. Include the line number on test items
             #      2. Better test format
-            self.fail(self.formaterror(msg.test_pylint.reason,
-                                       msg.test_pylint.error,
-                                       msg.test_pylint.fix,
-                                       data=str(test)))
+            self.fail([('Pylint lines', ''.join(test))])
 

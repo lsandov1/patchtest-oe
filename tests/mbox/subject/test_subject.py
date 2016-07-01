@@ -4,7 +4,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirna
 from oebase import OEBase
 from parse_subject import subject
 from pyparsing import ParseException
-import mboxmsg as msg
 
 class OESubject(OEBase):
 
@@ -14,9 +13,7 @@ class OESubject(OEBase):
     def test_subject_presence(self):
         for message in OESubject.mbox:
             if not message[self.sub]:
-                self.fail(self.formaterror(msg.test_subject_presence.reason,
-                                           msg.test_subject_presence.error,
-                                           msg.test_subject_presence.fix))
+                self.fail()
 
     def test_subject_format(self):
         for message in OESubject.mbox:
@@ -26,8 +23,5 @@ class OESubject(OEBase):
                 try:
                     subject.parseString(message[self.sub])
                 except ParseException as pe:
-                    self.fail(self.formaterror(msg.test_subject_format.reason,
-                                               msg.test_subject_format.error,
-                                               msg.test_subject_format.fix,
-                                               data=str(pe)))
+                    self.fail()
 

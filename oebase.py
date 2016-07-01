@@ -7,7 +7,10 @@ from mailbox import mbox
 
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pyparsing'))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'msg'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'doc'))
+
+from messages import oemessages as msg
+from messages import keystatus, failstatus
 
 logger=getLogger('patchtest')
 debug=logger.debug
@@ -16,22 +19,12 @@ warn=logger.warn
 error=logger.error
 
 class OEBase(TestCase):
-    def formaterror(self, reason, error, fix, cmd='', result='FAIL', stdout='', returncode=0, data=''):
-        """Encodes failure data passed to the testing framework"""
-        return dumps({'result': result,
-                      'id': self.id(),
-                      'cmd': cmd,
-                      'stdout': stdout,
-                      'return': returncode,
-                      'reason': reason,
-                      'error' : error,
-                      'fix'   : fix,
-                      'data'  : data})
 
     @classmethod
     def setUpClass(cls):
 
-        cls.patchset = PatchSet.from_filename(pti.repo.patch)
+        with open(pti.repo.patch) as f:
+            cls.patchset = PatchSet(f, encoding='utf-8')
         cls.mbox = mbox(pti.repo.patch)
 
         cls.setUpClassLocal()
@@ -39,4 +32,15 @@ class OEBase(TestCase):
     @classmethod
     def setUpClassLocal(cls):
         pass
+    
+    def __str__(self):
+        testid = '.'.join(self.id().split('.')[-2:])
+        return dumps(msg[testid])
+
+    def fail(self, data=[]):
+        testid = '.'.join(self.id().split('.')[-2:])
+        failvalue = list(msg[testid])
+        failvalue.extend(data)
+        return super(OEBase, self).fail(dumps(failvalue))
+        
 
