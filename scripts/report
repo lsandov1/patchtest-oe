@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+from sys import exit
+import fileinput
+from json import loads
+
+header = """Thank you for your patch submission of the following patch series to
+OE-Core - this is an automated response - Several tests have been executed
+to this proposed patch yielding the following results:"""
+
+footer = """If you believe any of these test results are incorrect, please reply
+to the mailing list (openembedded-core@lists.openembedded.org) raising 
+your concerns. Otherwise we would appreciate you correcting the issues
+and submitting a new version of the patchset if applicable. Please
+ensure you add/increment the version number when sending the new
+version (i.e. [PATCH] -> [PATCH v2] -> [PATCH v3] -> ...)."""
+
+def p(key, value, leftwidth=20, maxwidth=80):
+    space, output = ' ', list()
+    key, value = str(key), str(value)
+    if not key or not value:
+        return
+    key, lines = key.strip(), value.strip().splitlines()
+    rightwidth = maxwidth - leftwidth
+    output.append('{:{}s} {:<{}s}'.format(key, leftwidth, lines[0], rightwidth))
+    for line in lines[1:]:
+        output.append('{:{}s} {:<{}s}'.format(space, leftwidth, line, rightwidth))
+    return '\n'.join(output)
+
+def report(jsonlines):
+    print header
+    print('')
+
+    for jsonline in jsonlines:
+        result = loads(jsonline)
+        print('-' * 80)
+        for k, v in result:
+            print(p(k, v))
+
+    print('')
+    print footer
+
+if __name__ == '__main__':
+    ret = 1
+    try:
+        ret = report(fileinput.input('-'))
+    except:
+        import traceback
+        traceback.print_exc(5)
+    exit(ret)
