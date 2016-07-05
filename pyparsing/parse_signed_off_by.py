@@ -3,7 +3,7 @@
 from pyparsing import Literal, OneOrMore
 from common import word, worddot, at, lessthan, greaterthan, start, end, colon
 
-name = OneOrMore(word)
+name = OneOrMore(worddot)
 
 username = OneOrMore(worddot)
 domain = OneOrMore(worddot)
