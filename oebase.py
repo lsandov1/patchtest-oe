@@ -10,7 +10,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pyparsing'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'doc'))
 
 from messages import oemessages as msg
-from messages import keystatus, failstatus
 
 logger=getLogger('patchtest')
 debug=logger.debug
@@ -33,10 +32,6 @@ class OEBase(TestCase):
     def setUpClassLocal(cls):
         pass
     
-    def __str__(self):
-        testid = '.'.join(self.id().split('.')[-2:])
-        return dumps(msg[testid])
-
     def fail(self, data=[]):
         testid = '.'.join(self.id().split('.')[-2:])
         failvalue = list(msg[testid])
