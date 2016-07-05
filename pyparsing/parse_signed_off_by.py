@@ -7,7 +7,10 @@ name = OneOrMore(worddot)
 
 username = OneOrMore(worddot)
 domain = OneOrMore(worddot)
-email = username + at + domain
+
+# taken from https://pyparsing-public.wikispaces.com/Helpful+Expressions
+email = Regex(r"(?P<user>[A-Za-z0-9._%+-]+)@(?P<hostname>[A-Za-z0-9.-]+)\.(?P<domain>[A-Za-z]{2,4})")
+
 email_enclosed = lessthan + email + greaterthan
 
 signed_off_by_mark = Literal("Signed-off-by")
