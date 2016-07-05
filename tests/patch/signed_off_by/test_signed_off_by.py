@@ -39,5 +39,5 @@ class OEPatchSignedOffBy(OEBase):
                     try:
                         signed_off_by.parseString(line.lstrip('+'))
                     except ParseException as pe:
-                            self.fail([('Parse Exception', str(pe))])
+                        self.fail([('line', line), ('Parse Exception', str(pe))])
 
