@@ -23,5 +23,5 @@ class OESubject(OEBase):
                 try:
                     subject.parseString(message[self.sub])
                 except ParseException as pe:
-                    self.fail()
+                    self.fail([('subject', message[self.sub])])
 
