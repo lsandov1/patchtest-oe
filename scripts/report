@@ -5,8 +5,8 @@ import fileinput
 from json import loads
 
 header = """Thank you for your patch submission of the following patch series to
-OE-Core - this is an automated response - Several tests have been executed
-to this proposed patch yielding the following results:"""
+OE-Core - this is an automated response. Several tests have been executed
+on this proposed patch yielding the following results:"""
 
 footer = """If you believe any of these test results are incorrect, please reply
 to the mailing list (openembedded-core@lists.openembedded.org) raising 
