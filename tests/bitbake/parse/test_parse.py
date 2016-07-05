@@ -16,7 +16,16 @@ def bitbake_check_output(args):
     return check_output(cmd, stderr=STDOUT, shell=True)
 
 def formatdata(e):
-    return list([('Command', e.cmd), ('Output', e.output), ('Return Code', e.returncode)])
+    def grep(log, regex='ERROR:'):
+        prog = compile(regex)
+        greplines = []
+        if log:
+            for line in log.splitlines():
+                if prog.search(line):
+                    greplines.append(line)
+        return '\n'.join(greplines)
+
+    return list([('Command', e.cmd), ('Output', grep(e.output)), ('Return Code', e.returncode)])
 
 class OEBitbakeParse(OEBase):
 
@@ -37,7 +46,7 @@ class OEBitbakeParse(OEBase):
         cls.recipes.extend(cls.modifiedrecipes)
 
         # regex to extract the recipe name on a recipe filename
-        cls.reciperegex = compile("(?P<pn>^[a-zA-Z-]+)")
+        cls.reciperegex = compile("(?P<pn>^\S+)(_\S+)")
 
     def pretest_bitbake_parse(self):
         try:
