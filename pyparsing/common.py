@@ -9,6 +9,8 @@ end   = LineEnd()
 at = Literal("@")
 lessthan = Literal("<")
 greaterthan = Literal(">")
+opensquare = Literal("[")
+closesquare = Literal("]")
 
 # word related
 word = Word(alphas)
