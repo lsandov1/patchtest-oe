@@ -144,17 +144,8 @@ oemessages['OEPatchTrailingSpaces.test_patch_trailing_spaces'] = [
     (keyid,'OEPatchTrailingSpaces.test_patch_trailing_spaces'),
 ]
 
-oemessages['OEPatchUpstreamStatus.test_upstream_status_presence'] = [
-    (keyid,'OEPatchUpstreamStatus.test_upstream_status_presence'),
-    (keyfix, """Every patch added next to a recipe must have an Upstream-Status
-specified in the patch header having the value of Pending, Submitted, Accepted, Backport,
-Denied, or Inappropriate. For more information on the meaning of each status, check
-http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines
-"""),
-]
-
-oemessages['OEPatchUpstreamStatus.test_upstream_status_valid_status'] = [
-    (keyid,'OEPatchUpstreamStatus.test_upstream_status_valid_status'),
+oemessages['OEPatchUpstreamStatus.test_upstream'] = [
+    (keyid,'OEPatchUpstreamStatus.test_upstream'),
     (keyfix, """Every patch added next to a recipe must have an Upstream-Status
 specified in the patch header having the value of Pending, Submitted, Accepted, Backport,
 Denied, or Inappropriate. Make sure your are following this format
@@ -163,7 +154,7 @@ Denied, or Inappropriate. Make sure your are following this format
 
 NOTE: For more information on the meaning of each status, check
 http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines
-""")
+"""),
 ]
 
 oemessages['OEPyLint.test_pylint'] = [

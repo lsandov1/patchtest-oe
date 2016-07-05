@@ -21,7 +21,7 @@ class OEPatchUpstreamStatus(OEBase):
         # match OEPatchUpstreamStatus.mark with '+' preceding it
         cls.prog = compile("(?<=\+)%s" % cls.mark)
 
-    def test_upstream_status_presence(self):
+    def test_upstream_status(self):
         if not OEPatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % OEPatchUpstreamStatus.mark)
 
@@ -29,21 +29,9 @@ class OEPatchUpstreamStatus(OEBase):
             payload = str(newpatch)
             if not OEPatchUpstreamStatus.prog.search(payload):
                 self.fail()
-
-    def test_upstream_status_valid_status(self):
-        if not OEPatchUpstreamStatus.newpatches:
-            self.skipTest("There are no new software patches, no reason to test %s presence" % OEPatchUpstreamStatus.mark)
-
-        for newpatch in OEPatchUpstreamStatus.newpatches:
-            payload = str(newpatch)
-            if not OEPatchUpstreamStatus.prog.search(payload):
-                self.skipTest("There is no string to check")
             for line in payload.splitlines():
                 if OEPatchUpstreamStatus.prog.search(payload):
                     try:
                         upstream_status.parseString(line.lstrip('+'))
                     except ParseException as pe:
-                        self.fail([('Possible values', ', '.join([str(status).strip('"') for status in upstream_status_valid_status])),
-                                   ('Parse Exception', str(pe))])
-                                   
-
+                        self.fail([('Parse Exception', str(pe))])
