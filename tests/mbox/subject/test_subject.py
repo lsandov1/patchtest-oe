@@ -24,5 +24,5 @@ class OESubject(OEBase):
                     subj = message[self.sub].replace('\n', '')
                     subject.parseString(subj)
                 except ParseException as pe:
-                    self.fail([('subject', subj)])
-
+                    self.fail([('Subject', pe.line),
+                               ('Pyparsing exception', pe.message)])
