@@ -21,7 +21,8 @@ class OESubject(OEBase):
                 self.skipTest('Empty subject, no reason to execute subject format test')
             else:
                 try:
-                    subject.parseString(message[self.sub])
+                    subj = message[self.sub].replace('\n', '')
+                    subject.parseString(subj)
                 except ParseException as pe:
-                    self.fail([('subject', message[self.sub])])
+                    self.fail([('subject', subj)])
 
