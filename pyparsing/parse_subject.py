@@ -7,7 +7,7 @@
 from pyparsing import Word, alphanums, Literal, OneOrMore, printables, Optional
 from common import start, end, colon, opensquare, closesquare
 
-prefix        = opensquare + Word(alphanums+"/,") + closesquare
+prefix        = opensquare + OneOrMore(Word(alphanums+"/,")) + closesquare
 target        = Word(alphanums+"/_-.")
 summary       = OneOrMore(Word(printables))
 subject       = start + Optional(prefix) + target + colon + summary + end
