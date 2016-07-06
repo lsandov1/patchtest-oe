@@ -1,6 +1,6 @@
 # signed-off-by pyparsing definition
 
-from pyparsing import Literal, OneOrMore
+from pyparsing import Literal, OneOrMore, Regex
 from common import word, worddot, at, lessthan, greaterthan, start, end, colon
 
 name = OneOrMore(worddot)
