@@ -1,7 +1,7 @@
 from unittest import TestCase
 from logging import getLogger
 from json import dumps
-from unidiff import PatchSet
+from unidiff import PatchSet, UnidiffParseError
 from patchtestdata import PatchTestInput as pti
 from mailbox import mbox
 
@@ -22,9 +22,17 @@ class OEBase(TestCase):
     @classmethod
     def setUpClass(cls):
 
-        with open(pti.repo.patch) as f:
-            cls.patchset = PatchSet(f, encoding='utf-8')
         cls.mbox = mbox(pti.repo.patch)
+
+        with open(pti.repo.patch) as f:
+            try:
+                # for the moment, the charset (encoding is hard coded) toUTF-8
+                cls.patchset = PatchSet(f, encoding=u'UTF-8')
+            except UnidiffParseError as upe:
+                # there are some patches that cannot be parsed by unidiff
+                # we need to figure out the root reason for this problem
+                error('unidiff failed to parse %s' % pti.repo.patch)
+                raise upe
 
         cls.setUpClassLocal()
 
