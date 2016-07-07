@@ -4,12 +4,11 @@ from json import dumps
 from unidiff import PatchSet, UnidiffParseError
 from patchtestdata import PatchTestInput as pti
 from mailbox import mbox
-
+from collections import defaultdict
 import sys, os
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pyparsing'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'doc'))
-
-from messages import oemessages as msg
 
 logger=getLogger('patchtest')
 debug=logger.debug
@@ -18,6 +17,7 @@ warn=logger.warn
 error=logger.error
 
 class OEBase(TestCase):
+    keyid = 'ID'
 
     @classmethod
     def setUpClass(cls):
@@ -39,11 +39,10 @@ class OEBase(TestCase):
     @classmethod
     def setUpClassLocal(cls):
         pass
-    
-    def fail(self, data=[]):
-        testid = '.'.join(self.id().split('.')[-2:])
-        failvalue = list(msg[testid])
-        failvalue.extend(data)
-        return super(OEBase, self).fail(dumps(failvalue))
-        
 
+    def fail(self, data=[]):
+        """ Convert to a JSON string failure data"""
+        value = list([(OEBase.keyid, self.id())])
+        if data:
+            value.extend(data)
+        return super(OEBase, self).fail(dumps(value))
