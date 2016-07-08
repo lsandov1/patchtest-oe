@@ -1,7 +1,6 @@
 import sys, os, re
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from oebase import OEBase
-import patchmsg as msg
 from unittest import skip
 
 # this check is being track at https://bugzilla.yoctoproject.org/show_bug.cgi?id=9876
