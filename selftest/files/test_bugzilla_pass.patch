@@ -1,0 +1,31 @@
+From 22ce570ff484c8cfad72a866cdd5e30b6d423cf0 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?An=C3=ADbal=20Lim=C3=B3n?= <anibal.limon@linux.intel.com>
+Date: Fri, 24 Jun 2016 15:52:21 -0500
+Subject: [PATCH 2/2] README.hardware: Pass
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[YOCTO #9000]
+
+Signed-off-by: Aníbal Limón <anibal.limon@linux.intel.com>
+---
+ README.hardware | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/README.hardware b/README.hardware
+index cc423e9..6a62b43 100644
+--- a/README.hardware
++++ b/README.hardware
+@@ -8,7 +8,7 @@ can be found by looking in the following directories:
+    meta/conf/machine/
+    meta-yocto-bsp/conf/machine/
+ 
+-some
++some2
+ 
+ If you are in doubt about using Poky/OpenEmbedded with your hardware, consult
+ the documentation for your board/device.
+-- 
+2.1.4
+

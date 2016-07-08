@@ -1,0 +1,31 @@
+From 0c3d42500677ced2d0b05551dff1a2b957d7623a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?An=C3=ADbal=20Lim=C3=B3n?= <anibal.limon@linux.intel.com>
+Date: Fri, 24 Jun 2016 15:51:34 -0500
+Subject: [PATCH 1/2] README.hardware: Add some
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[YOCTO 8999]
+
+Signed-off-by: Aníbal Limón <anibal.limon@linux.intel.com>
+---
+ README.hardware | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/README.hardware b/README.hardware
+index 9c74c5d..cc423e9 100644
+--- a/README.hardware
++++ b/README.hardware
+@@ -8,6 +8,8 @@ can be found by looking in the following directories:
+    meta/conf/machine/
+    meta-yocto-bsp/conf/machine/
+ 
++some
++
+ If you are in doubt about using Poky/OpenEmbedded with your hardware, consult
+ the documentation for your board/device.
+ 
+-- 
+2.1.4
+
