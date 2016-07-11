@@ -64,8 +64,8 @@ patchtest can accept a **single** patch from stdin or as parameter
 [source,shell]
 ----
 $ cd <your path to poky>
-$ git format-patch -1 --stdout | patchtest - --test-dir <path to your patchtest-oe folder>
-$ patchtest somepatch.patch --test-dir <path to your patchtest-oe folder>
+$ git format-patch -1 --stdout | patchtest - --no-apply --test-dir <path to your patchtest-oe folder/tests>
+$ patchtest somepatch.patch --no-apply --test-dir <path to your patchtest-oe folder/tests>
 ----
 
 New upstream patches can also be tested using git-pw as a fetching tool, but first you need to configure
