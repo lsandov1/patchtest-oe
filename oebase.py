@@ -22,17 +22,22 @@ class OEBase(TestCase):
     @classmethod
     def setUpClass(cls):
 
+        # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
+        f = open(pti.repo.patch, 'r')
+        cls.patchset = PatchSet(f, encoding=u'UTF-8')
 
-        with open(pti.repo.patch) as f:
-            try:
-                # for the moment, the charset (encoding is hard coded) toUTF-8
-                cls.patchset = PatchSet(f, encoding=u'UTF-8')
-            except UnidiffParseError as upe:
-                # there are some patches that cannot be parsed by unidiff
-                # we need to figure out the root reason for this problem
-                error('unidiff failed to parse %s' % pti.repo.patch)
-                raise upe
+        # Derived objects: nmessages, subjects, payloads and descriptions
+        cls.nmessages    = len(cls.mbox)
+
+        fullsubjects     = [message['subject'] for message in cls.mbox]
+        endprefixindexes = [fullsubject.find(']') for fullsubject in fullsubjects]
+        cls.subjects     = [fullsubjects[i][endprefixindexes[i]+1:].replace('\n','') for i in range(len(fullsubjects))]
+
+        cls.payloads     = [msg.get_payload() for msg in cls.mbox]
+
+        enddescriptions  = [((payload.find('Signed-off-by:')>=0) or payload.find('---')) for payload in cls.payloads]
+        cls.descriptions = [cls.payloads[i][:enddescriptions[i]] for i in range(cls.nmessages)]
 
         cls.setUpClassLocal()
 
