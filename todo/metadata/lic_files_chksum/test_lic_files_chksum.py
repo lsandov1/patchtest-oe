@@ -1,55 +1,39 @@
-import sys, os
+import sys, os, re
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase
+from oebase import OEBase, info
 from unittest import skip
 from parse_subject import subject
 
 class OELicFilesChksum(OEBase):
-    def test_lic_files_chksum_presence(self):
-        for patch in OELicFilesChksum.patchset:
-            # Get relevant patches: new .bb and .bbappend
-            if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
-                # If this patch adds the .bb or .bbappend file
-                if patch.is_added_file:
-                    payload = str(patch)
-                    # verify that patch includes license file information
-                    if ((not payload.find('LIC_FILES_CHKSUM =') == -1) |
-                        (not payload.find('LIC_FILES_CHKSUM ?=') == -1)):
-                        # if it does, then we are ok
-                        return
-                    else:
-                        # if it does not include it, patch does not have 
-                        # required license file information
-                        raise self.fail()
 
+    literalmark = 'LIC_FILES_CHKSUM'
+    addmark     = re.compile('\s*\+LIC_FILES_CHKSUM\s*\??=')
+    removemark  = re.compile('\s*-LIC_FILES_CHKSUM\s*\??=')
+    newpatchrecipes = []
+
+    @classmethod
+    def setUpClassLocal(cls):
+        """Gets those patches than introduced new recipe metadata"""
+        # get just those relevant patches: new software patches
+        for patch in cls.patchset:
+            if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
+                if patch.is_added_file:
+                    cls.newpatchrecipes.append(patch)
+
+    def test_lic_files_chksum_presence(self):
+        for patch in self.newpatchrecipes:
+            payload = str(patch)
+            # verify that patch includes license file information
+            if not self.addmark.search(payload):
+                raise self.fail()
 
     def test_lic_files_chksum_modified_not_mentioned(self):
-        self.sub = 'subject'
-        for patch in OELicFilesChksum.patchset:
-            # Get relevant patches: modified .bb and .bbappend
-            if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
-                if patch.is_modified_file:
-                    payload = str(patch)
-                    # verify if license file information is modified
-                    if ((not payload.find('-LIC_FILES_CHKSUM ') == -1) |
-                        (not payload.find('+LIC_FILES_CHKSUM ') == -1)):
-                        # verify that the modification is mentioned in subject
-                        for message in OELicFilesChksum.mbox:
-                            # Fail if subject is empty
-                            try:
-                                msgsubj = message[self.sub]
-                            except:
-                                self.fail()
-                            # If subject contains the mention, we are ok
-                            if (not msgsubj.find('LIC_FILES_CHKSUM') == -1):
-                                return
-                            # Split commit message from diff
-                            fullmsg = message.get_payload(decode=True)
-                            msglimit = message.get_payload().find('---')
-                            commsg = fullmsg[:msglimit]
-
-                            # If the mention is in commit message, we're ok
-                            if (not commsg.find('LIC_FILES_CHKSUM') == -1):
-                                return
-                            else:
-                                self.fail()
+        for i in range(OELicFilesChksum.nmessages):
+            payload = OELicFilesChksum.payloads[i]
+            if self.addmark.search(payload) and self.removemark.search(payload):
+                subject     = OELicFilesChksum.subjects[i]
+                description = OELicFilesChksum.descriptions[i]
+                # now lets search in the commit message (summary and description)
+                if (subject.find(self.literalmark) < 0) and \
+                   (description.find(self.literalmark) < 0):
+                    raise self.fail()
