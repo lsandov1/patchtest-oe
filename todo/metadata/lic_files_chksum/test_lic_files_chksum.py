@@ -6,9 +6,9 @@ from parse_subject import subject
 
 class OELicFilesChksum(OEBase):
 
-    literalmark = 'LIC_FILES_CHKSUM'
-    addmark     = re.compile('\s*\+LIC_FILES_CHKSUM\s*\??=')
-    removemark  = re.compile('\s*-LIC_FILES_CHKSUM\s*\??=')
+    licensemarks = re.compile('LIC_FILES_CHKSUM|LICENSE', re.IGNORECASE)
+    addmark      = re.compile('\s*\+LIC_FILES_CHKSUM\s*\??=')
+    removemark   = re.compile('\s*-LIC_FILES_CHKSUM\s*\??=')
     newpatchrecipes = []
 
     @classmethod
@@ -34,6 +34,6 @@ class OELicFilesChksum(OEBase):
                 subject     = OELicFilesChksum.subjects[i]
                 description = OELicFilesChksum.descriptions[i]
                 # now lets search in the commit message (summary and description)
-                if (subject.find(self.literalmark) < 0) and \
-                   (description.find(self.literalmark) < 0):
+                if (not self.licensemarks.search(subject)) and \
+                   (not self.licensemarks.search(description)):
                     raise self.fail()
