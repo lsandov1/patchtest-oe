@@ -18,9 +18,18 @@ error=logger.error
 
 class OEBase(TestCase):
     keyid = 'ID'
+    enddescriptionmarks = ['Signed-off-by', '---']
 
     @classmethod
     def setUpClass(cls):
+
+        def enddescription(payload):
+            """Find index where description ends"""
+            for mark in OEBase.enddescriptionmarks:
+                i = payload.find(mark)
+                if i >= 0:
+                    return i
+            return 0
 
         # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
@@ -36,7 +45,7 @@ class OEBase(TestCase):
 
         cls.payloads     = [msg.get_payload() for msg in cls.mbox]
 
-        enddescriptions  = [((payload.find('Signed-off-by:')>=0) or payload.find('---')) for payload in cls.payloads]
+        enddescriptions  = map(enddescription, cls.payloads)
         cls.descriptions = [cls.payloads[i][:enddescriptions[i]] for i in range(cls.nmessages)]
 
         cls.setUpClassLocal()
