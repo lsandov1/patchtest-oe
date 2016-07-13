@@ -6,7 +6,7 @@ from parse_subject import subject
 
 class OELicFilesChksum(OEBase):
 
-    licensemarks = re.compile('LIC_FILES_CHKSUM|LICENSE', re.IGNORECASE)
+    licensemarks = re.compile('LIC_FILES_CHKSUM|LICENSE|CHECKSUM|CHKSUM', re.IGNORECASE)
     addmark      = re.compile('\s*\+LIC_FILES_CHKSUM\s*\??=')
     removemark   = re.compile('\s*-LIC_FILES_CHKSUM\s*\??=')
     newpatchrecipes = []
