@@ -1,10 +1,10 @@
 import sys, os
 
-# New test cases should inherit from OEbase
+# New test cases should inherit from base
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from oebase import OEBase, info
+from base import Base, info
 
-class Sample(OEBase):
+class Sample(Base):
 
     def test_mbox(self):
         """Sample code demonstrating data extraction from mbox data"""

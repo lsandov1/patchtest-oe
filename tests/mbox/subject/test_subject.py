@@ -1,11 +1,11 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 
-from oebase import OEBase, warn, info
+from base import Base, warn, info
 import parse_subject
 from pyparsing import ParseException
 
-class OESubject(OEBase):
+class Subject(Base):
 
     maxlength = 50
 
@@ -15,7 +15,7 @@ class OESubject(OEBase):
         endprefix = ']'
 
         # go through all subjects and lstrip the first '[]' and replace newlines
-        for message in OESubject.mbox:
+        for message in Subject.mbox:
             subject         = message[self.key]
             closebracketpos = subject.find(endprefix)
             if closebracketpos < 0:
@@ -43,5 +43,5 @@ class OESubject(OEBase):
     def test_subject_length(self):
         for subject in self.subjects:
             l = len(subject)
-            if l > OESubject.maxlength:
-                self.fail([('Subject', subject), ('Length', 'Current length %s Max length %s' % (l, OESubject.maxlength))])
+            if l > Subject.maxlength:
+                self.fail([('Subject', subject), ('Length', 'Current length %s Max length %s' % (l, Subject.maxlength))])

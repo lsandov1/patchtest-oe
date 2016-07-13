@@ -1,12 +1,12 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase
+from base import Base
 from parse_signed_off_by import signed_off_by_mark
 
-class OEDescription(OEBase):
+class Description(Base):
 
     def test_description_presence(self):
-        for description in OEDescription.descriptions:
+        for description in Description.descriptions:
             # in case there are no description at all
             if not description:
                 self.fail()

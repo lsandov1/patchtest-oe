@@ -1,11 +1,11 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase,info
+from base import Base,info
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import compile
 
-class OEPatchSignedOffBy(OEBase):
+class PatchSignedOffBy(Base):
 
     @classmethod
     def setUpClassLocal(cls):
@@ -17,25 +17,25 @@ class OEPatchSignedOffBy(OEBase):
 
         cls.mark = str(signed_off_by_mark).strip('"')
 
-        # match OEPatchSignedOffBy.mark with '+' preceding it
+        # match PatchSignedOffBy.mark with '+' preceding it
         cls.prog = compile("(?<=\+)%s" % cls.mark)
 
     def test_signed_off_by_presence(self):
-        if not OEPatchSignedOffBy.newpatches:
-            self.skipTest("There are no new software patches, no reason to test %s presence" % OEPatchSignedOffBy.mark)
+        if not PatchSignedOffBy.newpatches:
+            self.skipTest("There are no new software patches, no reason to test %s presence" % PatchSignedOffBy.mark)
 
-        for newpatch in OEPatchSignedOffBy.newpatches:
+        for newpatch in PatchSignedOffBy.newpatches:
             payload = str(newpatch)
-            if not OEPatchSignedOffBy.prog.search(payload):
+            if not PatchSignedOffBy.prog.search(payload):
                 self.fail()
 
     def test_signed_off_by_format(self):
-        for newpatch in OEPatchSignedOffBy.newpatches:
+        for newpatch in PatchSignedOffBy.newpatches:
             payload = str(newpatch)
-            if not payload or not OEPatchSignedOffBy.prog.search(payload):
-                self.skipTest("%s not present, skipping format test" % OEPatchSignedOffBy.mark)
+            if not payload or not PatchSignedOffBy.prog.search(payload):
+                self.skipTest("%s not present, skipping format test" % PatchSignedOffBy.mark)
             for line in payload.splitlines():
-                if OEPatchSignedOffBy.prog.search(line):
+                if PatchSignedOffBy.prog.search(line):
                     try:
                         signed_off_by.parseString(line.lstrip('+'))
                     except ParseException as pe:

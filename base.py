@@ -17,7 +17,8 @@ info=logger.info
 warn=logger.warn
 error=logger.error
 
-class OEBase(TestCase):
+class Base(TestCase):
+    # if unit test fails, fail message will throw at least the following JSON: [('ID', testid)]
     keyid = 'ID'
     regex_enddescriptions = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
 
@@ -54,7 +55,7 @@ class OEBase(TestCase):
 
     def fail(self, data=[]):
         """ Convert to a JSON string failure data"""
-        value = list([(OEBase.keyid, self.id())])
+        value = list([(Base.keyid, self.id())])
         if data:
             value.extend(data)
-        return super(OEBase, self).fail(dumps(value))
+        return super(Base, self).fail(dumps(value))

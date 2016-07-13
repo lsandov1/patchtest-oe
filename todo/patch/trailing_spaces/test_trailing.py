@@ -1,6 +1,6 @@
 import sys, os, re
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase
+from base import Base
 from unittest import skip
 
 # this check is being track at https://bugzilla.yoctoproject.org/show_bug.cgi?id=9876
@@ -13,7 +13,7 @@ from unittest import skip
 # will be skipped
 
 @skip('Parsing the patch turns empty lines into lines with one space, so skipping the test')
-class OETrailingSpaces(OEBase):
+class TrailingSpaces(Base):
 
     def test_patch_trailing_spaces(self):
 
@@ -27,7 +27,7 @@ class OETrailingSpaces(OEBase):
         Author:   Jose Perez Carranza <jose.perez.carranza@intel.com>
         """
 
-        for patch in OETrailingSpaces.patchset:
+        for patch in TrailingSpaces.patchset:
             payload = str(patch)
             for line in payload.splitlines():
                  if re.search('.\s$',line):

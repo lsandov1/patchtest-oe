@@ -1,8 +1,8 @@
 import sys, os, re
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase
+from base import Base
 
-class OECVE(OEBase):
+class CVE(Base):
 
     re_cve_pattern = re.compile("CVE\-\d{4}\-\d+", re.IGNORECASE)
     re_cve_word    = re.compile("\s*\+CVE\s?", re.IGNORECASE)
@@ -12,16 +12,16 @@ class OECVE(OEBase):
         """
         Checks if CVE-xxxx-xxxx is in subject if CVE word is in the payload.
         """
-        for i in xrange(OECVE.nmessages):
-            if self.re_cve_word.search(OECVE.payloads[i]):
-                if not self.re_cve_pattern.search(OECVE.subjects[i]):
+        for i in xrange(CVE.nmessages):
+            if self.re_cve_word.search(CVE.payloads[i]):
+                if not self.re_cve_pattern.search(CVE.subjects[i]):
                     self.fail()
 
     def test_cve_tag_format(self):
         """
         Checks if patch contains CVE tag if "CVE-xxxx-xxxx" is in subject.
         """
-        for i in xrange(OECVE.nmessages):
-            if self.re_cve_pattern.search(OECVE.subjects[i]):
-                if not self.re_cve_tag.search(OECVE.payloads[i]):
+        for i in xrange(CVE.nmessages):
+            if self.re_cve_pattern.search(CVE.subjects[i]):
+                if not self.re_cve_tag.search(CVE.payloads[i]):
                     self.fail()

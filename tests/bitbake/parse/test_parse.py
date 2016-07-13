@@ -1,6 +1,6 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import warn, OEBase
+from base import warn, Base
 from patchtestdata import PatchTestInput as pti
 from subprocess import check_output, CalledProcessError, STDOUT
 from os.path import basename
@@ -27,7 +27,7 @@ def formatdata(e):
 
     return list([('Command', e.cmd), ('Output', grep(e.output)), ('Return Code', e.returncode)])
 
-class OEBitbakeParse(OEBase):
+class BitbakeParse(Base):
 
     @classmethod
     def setUpClassLocal(cls):
@@ -73,11 +73,11 @@ class OEBitbakeParse(OEBase):
             raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment_on_target(self):
-        if not OEBitbakeParse.modifiedrecipes:
+        if not BitbakeParse.modifiedrecipes:
             self.skipTest("Patch data does not modified any bb or bbappend file")
 
-        pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.recipes]
-        pn_list = [(pn_pv, OEBitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
+        pn_pv_list = [basename(recipe.path) for recipe in BitbakeParse.recipes]
+        pn_list = [(pn_pv, BitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
             if not match:
@@ -90,8 +90,8 @@ class OEBitbakeParse(OEBase):
                     raise self.fail(formatdata(e))
 
     def test_bitbake_environment_on_target(self):
-        pn_pv_list = [basename(recipe.path) for recipe in OEBitbakeParse.recipes]
-        pn_list = [(pn_pv, OEBitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
+        pn_pv_list = [basename(recipe.path) for recipe in BitbakeParse.recipes]
+        pn_list = [(pn_pv, BitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
             if not match:

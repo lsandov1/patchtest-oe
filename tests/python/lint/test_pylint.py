@@ -1,12 +1,12 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase, info, error
+from base import Base, info, error
 from pylint import epylint as lint
 from re import sub
 
 from patchtestdata import PatchTestDataStore as d
 
-class OEPyLint(OEBase):
+class PyLint(Base):
 
     @classmethod
     def setUpClassLocal(cls):
@@ -18,22 +18,22 @@ class OEPyLint(OEBase):
 
     def pretest_pylint(self):
         """(Python)Lint non-modified python files"""
-        if not OEPyLint.pythonpatches:
+        if not PyLint.pythonpatches:
             self.skipTest('No python related patches, skipping test')
 
         d['pylint_pretest'] = list()
-        for pythonpatch in OEPyLint.pythonpatches:
+        for pythonpatch in PyLint.pythonpatches:
             # run pylint just on modified files
             if pythonpatch.is_modified_file:
                 (pylint_stdout, pylint_stderr) = lint.py_run(pythonpatch.path, return_std=True)
                 d['pylint_pretest'].extend(pylint_stdout.readlines())
 
     def test_pylint(self):
-        if not OEPyLint.pythonpatches:
+        if not PyLint.pythonpatches:
             self.skipTest('No python related patches, skipping test')
 
         d['pylint_test'] = list()
-        for pythonpatch in OEPyLint.pythonpatches:
+        for pythonpatch in PyLint.pythonpatches:
             (pylint_stdout, pylint_stderr) = lint.py_run(pythonpatch.path, return_std=True)
             d['pylint_test'].extend(pylint_stdout.readlines())
 

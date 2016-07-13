@@ -1,12 +1,12 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase
+from base import Base
 
 from parse_upstream_status import upstream_status, upstream_status_mark, upstream_status_valid_status
 from pyparsing import ParseException
 from re import compile, search
 
-class OEPatchUpstreamStatus(OEBase):
+class PatchUpstreamStatus(Base):
 
     @classmethod
     def setUpClassLocal(cls):
@@ -18,19 +18,19 @@ class OEPatchUpstreamStatus(OEBase):
 
         cls.mark = str(upstream_status_mark).strip('"')
 
-        # match OEPatchUpstreamStatus.mark with '+' preceding it
+        # match PatchUpstreamStatus.mark with '+' preceding it
         cls.prog = compile("(?<=\+)%s" % cls.mark)
 
     def test_upstream_status(self):
-        if not OEPatchUpstreamStatus.newpatches:
-            self.skipTest("There are no new software patches, no reason to test %s presence" % OEPatchUpstreamStatus.mark)
+        if not PatchUpstreamStatus.newpatches:
+            self.skipTest("There are no new software patches, no reason to test %s presence" % PatchUpstreamStatus.mark)
 
-        for newpatch in OEPatchUpstreamStatus.newpatches:
+        for newpatch in PatchUpstreamStatus.newpatches:
             payload = str(newpatch)
-            if not OEPatchUpstreamStatus.prog.search(payload):
+            if not PatchUpstreamStatus.prog.search(payload):
                 self.fail()
             for line in payload.splitlines():
-                if OEPatchUpstreamStatus.prog.search(payload):
+                if PatchUpstreamStatus.prog.search(payload):
                     try:
                         upstream_status.parseString(line.lstrip('+'))
                     except ParseException as pe:

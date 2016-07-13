@@ -1,10 +1,10 @@
 import sys, os, re
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from oebase import OEBase, info
+from base import Base, info
 from unittest import skip
 from parse_subject import subject
 
-class OELicFilesChksum(OEBase):
+class LicFilesChksum(Base):
 
     licensemarks = re.compile('LIC_FILES_CHKSUM|LICENSE|CHECKSUM|CHKSUM', re.IGNORECASE)
     addmark      = re.compile('\s*\+LIC_FILES_CHKSUM\s*\??=')
@@ -28,11 +28,11 @@ class OELicFilesChksum(OEBase):
                 raise self.fail()
 
     def test_lic_files_chksum_modified_not_mentioned(self):
-        for i in range(OELicFilesChksum.nmessages):
-            payload = OELicFilesChksum.payloads[i]
+        for i in range(LicFilesChksum.nmessages):
+            payload = LicFilesChksum.payloads[i]
             if self.addmark.search(payload) and self.removemark.search(payload):
-                subject     = OELicFilesChksum.subjects[i]
-                description = OELicFilesChksum.descriptions[i]
+                subject     = LicFilesChksum.subjects[i]
+                description = LicFilesChksum.descriptions[i]
                 # now lets search in the commit message (summary and description)
                 if (not self.licensemarks.search(subject)) and \
                    (not self.licensemarks.search(description)):
