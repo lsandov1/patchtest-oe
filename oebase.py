@@ -6,6 +6,7 @@ from patchtestdata import PatchTestInput as pti
 from mailbox import mbox
 from collections import defaultdict
 import sys, os
+import re
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pyparsing'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'doc'))
@@ -18,18 +19,17 @@ error=logger.error
 
 class OEBase(TestCase):
     keyid = 'ID'
-    enddescriptionmarks = ['Signed-off-by', '---']
+    regex_enddescriptions = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
 
     @classmethod
     def setUpClass(cls):
 
-        def enddescription(payload):
-            """Find index where description ends"""
-            for mark in OEBase.enddescriptionmarks:
-                i = payload.find(mark)
-                if i >= 0:
-                    return i
-            return 0
+        def description(payload):
+            description = str()
+            match = cls.regex_enddescriptions.search(payload)
+            if match:
+                description = payload[:match.start()]
+            return description
 
         # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
@@ -44,9 +44,7 @@ class OEBase(TestCase):
         cls.subjects     = [fullsubjects[i][endprefixindexes[i]+1:].replace('\n','') for i in range(len(fullsubjects))]
 
         cls.payloads     = [msg.get_payload() for msg in cls.mbox]
-
-        enddescriptions  = map(enddescription, cls.payloads)
-        cls.descriptions = [cls.payloads[i][:enddescriptions[i]] for i in range(cls.nmessages)]
+        cls.descriptions = map(description, cls.payloads)
 
         cls.setUpClassLocal()
 
