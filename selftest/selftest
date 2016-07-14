@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+#
+# From the selftest/files folder, takes each patch (containing the test id
+# and expected result), run patchtest and compares output (expected versus
+# actual result). In case results do not match, print the test id
+#
+
+import os
+from os.path import join, dirname, abspath
+from subprocess import check_output, STDOUT
+
+currentdir = dirname(abspath(__file__))
+patchesdir = join(currentdir, 'files')
+testsdir   = join(dirname(currentdir), 'tests')
+
+def test(root, patch):
+    res = True
+    patchpath = abspath(join(root, patch))
+
+    a               = patch.split('.')
+    klass, testname = a[0], a[1]
+    expected_result = a[-1]
+    testid          = "%s.%s" % (klass,testname)
+
+    patchtestcmd     = 'patchtest %s --test-dir %s --no-apply' % (patchpath,testsdir)
+    patchtestresults = check_output(patchtestcmd, stderr=STDOUT, shell=True)
+
+    for patchtestresult in patchtestresults.splitlines():
+        if testid in patchtestresult:
+            result, _ = patchtestresult.split()
+            if result.lower() != expected_result.lower():
+                print 'patch=%s expected=%s actual=%s' % (patch, expected_result.lower(), result.lower())
+            break
+    else:
+        print "No test for=%s" % patch
+
+if __name__ == '__main__':
+    for root, dirs, patches in os.walk(patchesdir):
+        for patch in patches:
+            test(root, patch)
