@@ -1,19 +1,17 @@
 import sys, os
-from re import compile
+import re
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from base import Base, info
+from base import Base
 
 class Bugzilla(Base):
-    base_url = "https://bugzilla.yoctoproject.org/show_bug.cgi?id=%s"
+    rexp_detect     = re.compile("\[.*YOCTO.*\]", re.IGNORECASE)
+    rexp_validation = re.compile("\[YOCTO #(\d+)\]$")
 
     def test_bugzilla_entry_format(self):
-        rexp_detect = compile("\[.*[Y|y][O|o][C|c][T|t][O|o].*\]")
-        rexp_validation = compile("^\[YOCTO #(\d+)\]$")
-        for message in Bugzilla.mbox:
-            payload = message.get_payload()
-            for line in payload.splitlines():
-                if rexp_detect.match(line):
-                    if not rexp_validation.match(line):
+        for description in Bugzilla.descriptions:
+            for line in description.splitlines():
+                if self.rexp_detect.match(line):
+                    if not self.rexp_validation.match(line):
                         self.fail([('Entry', line)])
 
