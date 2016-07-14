@@ -21,16 +21,16 @@ def test(root, patch):
     a               = patch.split('.')
     klass, testname = a[0], a[1]
     expected_result = a[-1]
-    testid          = "%s.%s" % (klass,testname)
+    testid          = ".%s.%s" % (klass,testname)
 
-    patchtestcmd     = 'patchtest %s --test-dir %s --no-apply' % (patchpath,testsdir)
-    patchtestresults = check_output(patchtestcmd, stderr=STDOUT, shell=True)
+    cmd     = 'patchtest %s --test-dir %s --no-apply' % (patchpath,testsdir)
+    results = check_output(cmd, stderr=STDOUT, shell=True)
 
-    for patchtestresult in patchtestresults.splitlines():
-        if testid in patchtestresult:
-            result, _ = patchtestresult.split()
+    for resultline in results.splitlines():
+        if testid in resultline:
+            result, _ = resultline.split()
             if result.lower() != expected_result.lower():
-                print 'patch=%s expected=%s actual=%s' % (patch, expected_result.lower(), result.lower())
+                print 'patch=%s expected=%s actual=%s cmd=%s' % (patch, expected_result.lower(), result.lower(), cmd)
             break
     else:
         print "No test for=%s" % patch
