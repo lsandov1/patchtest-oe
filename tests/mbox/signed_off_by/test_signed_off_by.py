@@ -14,13 +14,12 @@ class SignedOffBy(Base):
         cls.prog = compile("(?<!\+)%s" % cls.mark)
 
     def test_signed_off_by_presence(self):
-        for message in SignedOffBy.mbox:
-            if not SignedOffBy.prog.search(message.get_payload()):
+        for payload in SignedOffBy.payloads:
+            if not SignedOffBy.prog.search(payload):
                 self.fail()
 
     def test_signed_off_by_format(self):
-        for message in SignedOffBy.mbox:
-            payload = message.get_payload()
+        for payload in SignedOffBy.payloads:
             if not payload or not SignedOffBy.prog.search(payload):
                 self.skipTest("%s not present, skipping format test" % SignedOffBy.mark)
             for line in payload.splitlines():
