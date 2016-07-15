@@ -31,5 +31,5 @@ class SignedOffBy(Base):
                     try:
                         signed_off_by.parseString(line)
                     except ParseException as pe:
-                        self.fail([('line', line), ('Parse Exception', str(pe))])
+                        self.fail([('line', pe.line), ('column', pe.col)])
 
