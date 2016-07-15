@@ -32,6 +32,10 @@ class Base(TestCase):
                 description = payload[:match.start()]
             return description
 
+        def subject(sub):
+            i = sub.find(']')
+            return sub[i+1:].replace('\n','').strip()
+
         # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
         f = open(pti.repo.patch, 'r')
@@ -39,13 +43,9 @@ class Base(TestCase):
 
         # Derived objects: nmessages, subjects, payloads and descriptions
         cls.nmessages    = len(cls.mbox)
-
-        fullsubjects     = [message['subject'] for message in cls.mbox]
-        endprefixindexes = [fullsubject.find(']') for fullsubject in fullsubjects]
-        cls.subjects     = [fullsubjects[i][endprefixindexes[i]+1:].replace('\n','') for i in range(len(fullsubjects))]
-
-        cls.payloads     = [msg.get_payload() for msg in cls.mbox]
-        cls.descriptions = map(description, cls.payloads)
+        cls.subjects     = [subject(msg['subject']) for msg in cls.mbox]
+        cls.payloads     = [msg.get_payload()       for msg in cls.mbox]
+        cls.descriptions = [description(pay)        for pay in cls.payloads]
 
         cls.setUpClassLocal()
 
