@@ -6,7 +6,7 @@ class oedefaultdict(defaultdict):
 
 fixes = oedefaultdict()
 
-# Bitbake related messages
+# Bitbake
 fixes['bitbake.parse.test_parse.BitbakeParse.test_bitbake_parse'] = """
 Make sure you can (bitbake) parse manually after patching:
 
@@ -38,7 +38,7 @@ after patching:
 
 """
 
-# MBOX related messages
+# MBOX
 fixes['mbox.bugzilla.test_bugzilla.Bugzilla.test_bugzilla_entry_format'] = """
 Amend the commit message and include the bugzilla entry at the end of the
 commit description as
@@ -83,6 +83,18 @@ Amend the commit including your signature:
 
 NOTE: Make sure you have set your name and e-mail on the git configuration.
 """
+
+# Patch
+
+fixes['test_cve.CVE.test_cve_presence_on_subject'] = """
+Please include the CVE, as CVE-xxxx-xxxx, in the subject
+"""
+
+fixes['test_cve.CVE.test_cve_tag_format'] = """
+Please include the CVE tag on the patch added to the recipe, see:
+http://openembedded.org/wiki/Commit_Patch_Message_Guidelines#CVE_Patches
+"""
+
 
 fixes['PatchSignedOffBy.test_signed_off_by_presence'] = """
 Every patch added next to a recipe must be signed off, so amend every commit
