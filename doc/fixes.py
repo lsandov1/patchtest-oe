@@ -39,6 +39,10 @@ after patching:
 """
 
 # MBOX
+fixes['test_description.Description.test_description_presence'] = """
+Please include a brief description for your patch.
+"""
+
 fixes['mbox.bugzilla.test_bugzilla.Bugzilla.test_bugzilla_entry_format'] = """
 Amend the commit message and include the bugzilla entry at the end of the
 commit description as
