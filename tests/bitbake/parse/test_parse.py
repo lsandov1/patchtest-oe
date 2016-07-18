@@ -23,7 +23,11 @@ def formatdata(e):
             for line in log.splitlines():
                 if prog.search(line):
                     greplines.append(line)
-        return '\n'.join(greplines)
+        # something went really wrong, so provide the complete log
+        if not greplines:
+            return log
+        else:
+            return '\n'.join(greplines)
 
     return list([('Command', e.cmd), ('Output', grep(e.output)), ('Return Code', e.returncode)])
 
