@@ -15,7 +15,7 @@ class CVE(Base):
         for i in xrange(CVE.nmessages):
             if self.re_cve_word.search(CVE.payloads[i]):
                 if not self.re_cve_pattern.search(CVE.subjects[i]):
-                    self.fail()
+                    self.fail([('Subject', CVE.subjects[i])])
 
     def test_cve_tag_format(self):
         """
@@ -24,4 +24,4 @@ class CVE(Base):
         for i in xrange(CVE.nmessages):
             if self.re_cve_pattern.search(CVE.subjects[i]):
                 if not self.re_cve_tag.search(CVE.payloads[i]):
-                    self.fail()
+                    self.fail([('Subject', CVE.subjects[i])])
