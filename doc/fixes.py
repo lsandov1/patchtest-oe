@@ -89,6 +89,12 @@ NOTE: Make sure you have set your name and e-mail on the git configuration.
 """
 
 # Patch
+fixes['test_lic_files_chksum.LicFilesChkSum.test_lic_files_chksum_modified_not_mentioned'] = """
+Provide a reason for the checksum change on the commit's summary
+"""
+fixes['test_lic_files_chksum.LicFilesChkSum.test_lic_files_chksum_presence'] = """
+Specify the variable LIC_FILES_CHKSUM on your new recipe.
+"""
 
 fixes['test_cve.CVE.test_cve_presence_on_subject'] = """
 Please include the CVE, as CVE-xxxx-xxxx, in the subject
@@ -98,7 +104,6 @@ fixes['test_cve.CVE.test_cve_tag_format'] = """
 Please include the CVE tag on the patch added to the recipe, see:
 http://openembedded.org/wiki/Commit_Patch_Message_Guidelines#CVE_Patches
 """
-
 
 fixes['PatchSignedOffBy.test_signed_off_by_presence'] = """
 Every patch added next to a recipe must be signed off, so amend every commit
