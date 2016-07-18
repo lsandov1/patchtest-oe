@@ -1,152 +1,101 @@
 from collections import defaultdict, OrderedDict
 
-keyid           = 'ID'
-keyfix          = 'Proposed Fix'
-
 class oedefaultdict(defaultdict):
     def __missing__(self, key):
-        return list([(keyid,key)])
+        return str('No proposed fix yet')
 
-oemessages = oedefaultdict()
+fixes = oedefaultdict()
 
 # Bitbake related messages
-oemessages['OEBitbakeParse.pretest_bitbake_parse'] = [
-    (keyid,'OEBitbakeParse.pretest_bitbake_parse'),
-    (keyfix,"""Make sure you can (bitbake) parse manually before using patchtest:
-$ cd <your poky repo>
-$ source oe-init-build-env
-$ bitbake -p
-"""),
-]
+fixes['bitbake.parse.test_parse.BitbakeParse.test_bitbake_parse'] = """
+Make sure you can (bitbake) parse manually after patching:
 
-oemessages['OEBitbakeParse.test_bitbake_parse'] = [
-    (keyid,'OEBitbakeParse.test_bitbake_parse'),
-    (keyfix,"""Make sure you can (bitbake) parse manually after patching:
-$ cd <your poky repo>
-$ git am <your patch>
-$ source oe-init-build-env
-$ bitbake -p
-"""),
-]
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -p
 
-oemessages['OEBitbakeParse.pretest_bitbake_environment'] = [
-    (keyid,'OEBitbakeParse.pretest_bitbake_environment'),
-    (keyfix,"""Make sure you can get the (bitbake) environment manually before using patchtest:
-$ cd <your poky repo>
-$ source oe-init-build-env
-$ bitbake -e
-"""),
-]
+"""
 
-oemessages['OEBitbakeParse.test_bitbake_environment'] = [
-    (keyid,'OEBitbakeParse.test_bitbake_environment'),
-    (keyfix,"""Make sure you can get the (bitbake) environment manually after patching:
-$ cd <your poky repo>
-$ git am <your patch>
-$ source oe-init-build-env
-$ bitbake -e
-"""),
-]
+fixes['bitbake.parse.test_parse.BitbakeParse.test_bitbake_environment'] = """
+Make sure you can get the (bitbake) environment manually after patching:
 
-oemessages['OEBitbakeParse.pretest_bitbake_environment_on_target'] = [
-    (keyid,'OEBitbakeParse.pretest_bitbake_environment_on_target'),
-    (keyfix,"""Make sure you can get the environment manually before using patchtest:
-$ cd <your poky repo>
-$ source oe-init-build-env
-$ bitbake -e <target>
-"""),
-]
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -e
 
-oemessages['OEBitbakeParse.test_bitbake_environment_on_target'] = [
-    (keyid,'OEBitbakeParse.test_bitbake_environment_on_target'),
-    (keyfix,"""Make sure you can get the environment manually on a specific target
+"""
+
+fixes['bitbake.parse.test_parse.BitbakeParse.test_bitbake_environment_on_target'] = """
+Make sure you can get the environment manually on a specific target
 after patching:
-$ cd <your poky repo>
-$ git am <your patch>
-$ source oe-init-build-env
-$ bitbake -e <target>
-"""),
-]
+
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -e <target>
+
+"""
 
 # MBOX related messages
-oemessages['OESubject.test_subject_presence'] = [
-    (keyid,'OESubject.test_subject_presence'),
-    (keyfix,"""Amend the commit message and include a summary with
-the following format:
+fixes['Subject.test_subject_presence'] = """
+Amend the commit message and include a summary with the following format:
+
+    <target>: <summary>
+
+where <target> is the filename where main code changes apply.
+"""
+
+fixes['Subject.test_subject_format'] = """
+Amend the commit message and include a summary with the following format:
 
 <target>: <summary>
 
-where <target> is the filename where main code changes apply."""),
-]
+where <target> is the filename where main code changes apply.
+"""
 
-oemessages['OESubject.test_subject_format'] = [
-    (keyid,'OESubject.test_subject_format'),
-    (keyfix,"""Amend the commit message and include a summary with
-the following format:
+fixes['SignedOffBy.test_signed_off_by_presence'] = """
+Amend the commit including your signature:
 
-<target>: <summary>
+    $ git commit --amend -s
+    $ git format-patch -1
+    $ git send-email --to <target mailing list> <created patch>
 
-where <target> is the filename where main code changes apply."""),
-]
+"""
 
-oemessages['OESignedOffBy.test_signed_off_by_presence'] = [
-    (keyid,'OESignedOffBy.test_signed_off_by_presence'),
-    (keyfix,"""Amend the commit including your signature:
-$ git commit --amend -s
-$ git format-patch -1
-$ git send-email --to <target mailing list> <created patch>"""),
-]
+fixes['SignedOffBy.test_signed_off_by_format'] = """
+Amend the commit including your signature:
 
-oemessages['OESignedOffBy.test_signed_off_by_format'] = [
-    (keyid,'OESignedOffBy.test_signed_off_by_format'),
-    (keyfix,"""Amend the commit including your signature:
-$ git commit --amend -s
-$ git format-patch -1
-$ git send-email --to <target mailing list> <created patch>
+    $ git commit --amend -s
+    $ git format-patch -1
+    $ git send-email --to <target mailing list> <created patch>
 
-NOTE: Make sure you have configured git before, setting name and email
-correctly.
-"""),
-]
+NOTE: Make sure you have set your name and e-mail on the git configuration.
+"""
 
-# patch related messages
-oemessages['OECVE.test_cve_presence_on_subject'] = [
-    (keyid,'OECVE.test_cve_presence_on_subject'),
-]
+fixes['PatchSignedOffBy.test_signed_off_by_presence'] = """
+Every patch added next to a recipe must be signed off, so amend every commit
+and include your signature:
 
-oemessages['OECVE.test_cve_tag_format'] = [
-    (keyid,'OECVE.test_cve_tag_format'),
-]
+    $ git commit --amend -s
+    $ git format-patch -1
 
-oemessages['OEPatchSignedOffBy.test_signed_off_by_presence'] = [
-    (keyid,'OEPatchSignedOffBy.test_signed_off_by_presence'),
-    (keyfix, """Every patch added next to a recipe must be signed off,
-so amend every commit and include your signature:
-$ git commit --amend -s
-$ git format-patch -1
-"""),
-]
+"""
 
-oemessages['OEPatchSignedOffBy.test_signed_off_by_format'] = [
-    (keyid,'OEPatchSignedOffBy.test_signed_off_by_format'),
-    (keyfix, """Every patch added next to a recipe must be signed off,
-so amend every commit and include your signature:
-$ git commit --amend -s
-$ git format-patch -1
+fixes['PatchSignedOffBy.test_signed_off_by_format'] = """
+Every patch added next to a recipe must be signed off, so amend every commit
+and include your signature:
+
+    $ git commit --amend -s
+    $ git format-patch -1
 
 NOTE: Make sure you have configured git before, setting name and email
 correctly.
-""")
+"""
 
-]
-
-oemessages['OEPatchTrailingSpaces.test_patch_trailing_spaces'] = [
-    (keyid,'OEPatchTrailingSpaces.test_patch_trailing_spaces'),
-]
-
-oemessages['OEPatchUpstreamStatus.test_upstream'] = [
-    (keyid,'OEPatchUpstreamStatus.test_upstream'),
-    (keyfix, """Every patch added next to a recipe must have an Upstream-Status
+fixes['PatchUpstreamStatus.test_upstream'] = """
+Every patch added next to a recipe must have an Upstream-Status
 specified in the patch header having the value of Pending, Submitted, Accepted, Backport,
 Denied, or Inappropriate. Make sure your are following this format
 
@@ -154,12 +103,10 @@ Denied, or Inappropriate. Make sure your are following this format
 
 NOTE: For more information on the meaning of each status, check
 http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines
-"""),
-]
+"""
 
-oemessages['OEPyLint.test_pylint'] = [
-    (keyid,  'OEPyLint.test_pylint'),
-    (keyfix, """Check your modified python lines with pylint, specially those being
-introduced by your changes"""),
-]
+fixes['PyLint.test_pylint'] = """
+Check your modified python lines with pylint, specially those being introduced by your
+changes.
+"""
 
