@@ -36,11 +36,12 @@ def report(jsonlines):
     print('')
 
     for jsonline in jsonlines:
-        result = loads(jsonline)
-        testid = dict(result)['testid']
-        if 'pretest' in testid:
+        result      = loads(jsonline)
+        fulltestid  = dict(result)['testid']
+        if 'pretest' in fulltestid:
             continue
-        result.insert(1,('Proposed Fix', fixes[testid]))
+        shorttestid = '.'.join(fulltestid.split('.')[-2:])
+        result.insert(1,('Proposed Fix', fixes[shorttestid]))
         print('-' * 80)
         for k, v in result:
             print(p(k, v))
