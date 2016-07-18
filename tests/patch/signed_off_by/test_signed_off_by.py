@@ -4,6 +4,7 @@ from base import Base,info
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import compile
+from unittest import skip
 
 class PatchSignedOffBy(Base):
 
@@ -29,6 +30,7 @@ class PatchSignedOffBy(Base):
             if not PatchSignedOffBy.prog.search(payload):
                 self.fail()
 
+    @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')
     def test_signed_off_by_format(self):
         for newpatch in PatchSignedOffBy.newpatches:
             payload = str(newpatch)
