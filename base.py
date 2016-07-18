@@ -19,7 +19,7 @@ error=logger.error
 
 class Base(TestCase):
     # if unit test fails, fail message will throw at least the following JSON: [('ID', testid)]
-    keyid = 'ID'
+    keyid = 'testid'
     regex_enddescriptions = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
 
     @classmethod
