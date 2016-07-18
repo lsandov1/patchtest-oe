@@ -39,6 +39,16 @@ after patching:
 """
 
 # MBOX related messages
+fixes['mbox.bugzilla.test_bugzilla.Bugzilla.test_bugzilla_entry_format'] = """
+Amend the commit message and include the bugzilla entry at the end of the
+commit description as
+
+    [YOCTO #<bugzilla ID>]
+
+where <bugzilla ID> is the bugzilla entry that this patch fixes.
+"""
+
+
 fixes['Subject.test_subject_presence'] = """
 Amend the commit message and include a summary with the following format:
 
