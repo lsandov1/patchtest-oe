@@ -5,7 +5,9 @@ from base import Base
 class Description(Base):
 
     def test_description_presence(self):
-        for description in Description.descriptions:
+        for i in xrange(Description.nmessages):
+            description = Description.descriptions[i]
             if not description.strip():
-                self.fail()
+                subject = Description.subjects[i]
+                self.fail([('Message Subject', subject)])
 
