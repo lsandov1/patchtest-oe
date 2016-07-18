@@ -69,7 +69,7 @@ Amend the commit message and include a summary with the following format:
 where <target> is the filename where main code changes apply.
 """
 
-fixes['SignedOffBy.test_signed_off_by_presence'] = """
+fixes['mbox.signed_off_by.test_signed_off_by.SignedOffBy.test_signed_off_by_presence'] = """
 Amend the commit including your signature:
 
     $ git commit --amend -s
@@ -78,7 +78,7 @@ Amend the commit including your signature:
 
 """
 
-fixes['SignedOffBy.test_signed_off_by_format'] = """
+fixes['mbox.signed_off_by.test_signed_off_by.SignedOffBy.test_signed_off_by_format'] = """
 Amend the commit including your signature:
 
     $ git commit --amend -s
