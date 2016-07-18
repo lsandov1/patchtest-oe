@@ -105,7 +105,7 @@ Please include the CVE tag on the patch added to the recipe, see:
 http://openembedded.org/wiki/Commit_Patch_Message_Guidelines#CVE_Patches
 """
 
-fixes['PatchSignedOffBy.test_signed_off_by_presence'] = """
+fixes['patch.signed_off_by.test_signed_off_by.PatchSignedOffBy.test_signed_off_by_presence'] = """
 Every patch added next to a recipe must be signed off, so amend every commit
 and include your signature:
 
@@ -114,7 +114,7 @@ and include your signature:
 
 """
 
-fixes['PatchSignedOffBy.test_signed_off_by_format'] = """
+fixes['patch.signed_off_by.test_signed_off_by.PatchSignedOffBy.test_signed_off_by_format'] = """
 Every patch added next to a recipe must be signed off, so amend every commit
 and include your signature:
 
