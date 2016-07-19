@@ -70,6 +70,10 @@ Amend the commit message and include a summary with the following format:
 where <target> is the filename where main code changes apply.
 """
 
+fixes['Subject.test_subject_length'] = """
+Commit summary must not exceed 80 characters.
+"""
+
 # mbox signed-off-by
 fixes['SignedOffBy.test_signed_off_by_presence'] = """
 Amend the commit including your signature:
