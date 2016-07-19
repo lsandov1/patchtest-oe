@@ -23,7 +23,7 @@ class Subject(Base):
                     parse_subject.subject.parseString(subject)
                 except ParseException as pe:
                     self.fail([('Subject', pe.line),
-                               ('Pyparsing exception', pe.message)])
+                               ('Column',  pe.col)])
 
     def test_subject_length(self):
         for subject in Subject.subjects:
