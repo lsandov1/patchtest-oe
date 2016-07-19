@@ -32,22 +32,28 @@ def p(key, value, leftwidth=20, maxwidth=80):
     return '\n'.join(output)
 
 def report(jsonlines):
-    print header
-    print('')
+    print "%s\n" % header
 
     for jsonline in jsonlines:
         result      = loads(jsonline)
-        fulltestid  = dict(result)['testid']
+        testidtuple = result.pop(0)
+        fulltestid  = testidtuple[1]
+        shorttestid = '.'.join(fulltestid.split('.')[-2:])
+
         if 'pretest' in fulltestid:
             continue
-        shorttestid = '.'.join(fulltestid.split('.')[-2:])
-        result.insert(1,('Proposed Fix', fixes[shorttestid]))
-        print('-' * 80)
+
+        # First and second rows always correspond to the test ID and the proposed Fix
+        result.insert(0, ('Test ID',      shorttestid))
+        result.insert(1, ('Proposed Fix', fixes[shorttestid]))
+
+        print '%s\n' % ('-'*80)
         for k, v in result:
             print(p(k, v))
+        print '\n'
 
-    print('')
-    print footer
+    print '%s' % ('-'*80)
+    print "\n%s" % footer
 
 if __name__ == '__main__':
     ret = 1
