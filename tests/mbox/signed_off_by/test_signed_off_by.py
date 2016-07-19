@@ -15,9 +15,11 @@ class SignedOffBy(Base):
         cls.prog = compile("(?<!\+)%s" % cls.mark)
 
     def test_signed_off_by_presence(self):
-        for payload in SignedOffBy.payloads:
+        for i in xrange(SignedOffBy.nmessages):
+            payload = SignedOffBy.payloads[i]
             if not SignedOffBy.prog.search(payload):
-                self.fail()
+                self.fail([('Subject',     SignedOffBy.subjects[i]),
+                           ('Description', SignedOffBy.descriptions[i])])
 
     @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')
     def test_signed_off_by_format(self):
