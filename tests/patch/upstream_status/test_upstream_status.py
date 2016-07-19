@@ -21,7 +21,7 @@ class PatchUpstreamStatus(Base):
         # match PatchUpstreamStatus.mark with '+' preceding it
         cls.prog = compile("(?<=\+)%s" % cls.mark)
 
-    def test_upstream_status(self):
+    def test_upstream_status_presence(self):
         if not PatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % PatchUpstreamStatus.mark)
 
