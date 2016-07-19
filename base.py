@@ -19,7 +19,7 @@ error=logger.error
 
 class Base(TestCase):
     # if unit test fails, fail message will throw at least the following JSON: [('ID', testid)]
-    keyid = 'testid'
+    testid = 'testid'
     regex_enddescriptions = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
 
     @classmethod
@@ -55,7 +55,7 @@ class Base(TestCase):
 
     def fail(self, data=[]):
         """ Convert to a JSON string failure data"""
-        value = list([(Base.keyid, self.id())])
+        value = list([(Base.testid, self.id())])
         if data:
             value.extend(data)
         return super(Base, self).fail(dumps(value))
