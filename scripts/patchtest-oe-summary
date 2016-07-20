@@ -31,12 +31,14 @@ def p(key, value, leftwidth=20, maxwidth=80):
         output.append('{:{}s} {:<{}s}'.format(space, leftwidth, line, rightwidth))
     return '\n'.join(output)
 
-def report(jsonlines):
+def summary(jsonlines):
     print "%s\n" % header
 
     for jsonline in jsonlines:
         result      = loads(jsonline)
-        testidtuple = result.pop(0)
+        status      = result['status']
+        data        = result['data']
+        testidtuple = data.pop(0)
         fulltestid  = testidtuple[1]
         shorttestid = '.'.join(fulltestid.split('.')[-2:])
 
@@ -44,11 +46,11 @@ def report(jsonlines):
             continue
 
         # First and second rows always correspond to the test ID and the proposed Fix
-        result.insert(0, ('Test ID',      shorttestid))
-        result.insert(1, ('Proposed Fix', fixes[shorttestid]))
+        data.insert(0, ('Test ID',      shorttestid))
+        data.insert(1, ('Proposed Fix', fixes[shorttestid]))
 
         print '%s\n' % ('-'*80)
-        for k, v in result:
+        for k, v in data:
             print(p(k, v))
         print '\n'
 
@@ -58,7 +60,7 @@ def report(jsonlines):
 if __name__ == '__main__':
     ret = 1
     try:
-        ret = report(fileinput.input('-'))
+        ret = summary(fileinput.input('-'))
     except:
         import traceback
         traceback.print_exc(5)
