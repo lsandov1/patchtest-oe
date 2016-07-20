@@ -59,3 +59,6 @@ class Base(TestCase):
         if data:
             value.extend(data)
         return super(Base, self).fail(dumps(value))
+
+    def __str__(self):
+        return dumps(list([(Base.testid, self.id())]))
