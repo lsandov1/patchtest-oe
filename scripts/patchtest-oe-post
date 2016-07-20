@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -o nounset
+set -o errexit
+
+# TODO: to be passed as arguments
+polldir="/home/lsandov1/postpoky"
+postdir="/home/lsandov1/postpoky"
+testdir="/home/lsandov1/repos/patchtest-oe/tests"
+resultsdir="/home/lsandov1/cron/patchtest"
+
+[ ! -d ${resultsdir} ] && { mkdir -p ${resultsdir}; }
+
+newseries="$(patchtest-oe-poll-series ${polldir})"
+
+failure="failure"
+success="success"
+testname="patchtest"
+
+for series in ${newseries}; do
+    rawsummary="${resultsdir}/${series}.raw.summary"
+    finalsummary="${resultsdir}/${series}.summary"
+    ( cd ${polldir}; git pw mbox ${series} | \
+	patchtest - \
+	    -C         $polldir \
+	    --test-dir $testdir \
+	    --json ) >  $rawsummary
+
+    if [ "$(cat ${rawsummary} | patchtest-oe-any-fail)" == "yes" ]; then
+	cat ${rawsummary} | grep '"status": "FAIL"' | patchtest-oe-summary > ${finalsummary}
+	result=$failure
+    else
+	# produce the summary to be post to patchwork
+	cat ${rawsummary} | patchtest-oe-summary > ${finalsummary}
+	result=$success
+    fi
+
+    # Post resutls
+    ( cd ${postdir}; git pw post-result \
+	$series \
+	$testname \
+	$result \
+	--summary-from-file ${finalsummary} )
+
+    echo "Tested Series: ${series}. Result: ${result}."
+done
