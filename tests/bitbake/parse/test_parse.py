@@ -5,6 +5,8 @@ from patchtestdata import PatchTestInput as pti
 from subprocess import check_output, CalledProcessError, STDOUT
 from os.path import basename
 from re import compile
+from unittest import skipUnless
+from patchtestdata import PatchTestInput as pti
 
 def bitbake_check_output(args):
     bitbake_cmd = 'bitbake %s' % ' '.join(args)
@@ -31,6 +33,7 @@ def formatdata(e):
 
     return list([('Command', e.cmd), ('Output', grep(e.output)), ('Return Code', e.returncode)])
 
+@skipUnless(pti.merge, 'Test suite only makes sense when patch is merged into the repository')
 class BitbakeParse(Base):
 
     @classmethod

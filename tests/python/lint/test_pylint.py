@@ -3,9 +3,12 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirna
 from base import Base, info, error
 from pylint import epylint as lint
 from re import sub
+from unittest import skipUnless
+from patchtestdata import PatchTestInput as pti
 
 from patchtestdata import PatchTestDataStore as d
 
+@skipUnless(pti.merge, 'Test suite only makes sense when patch is merged into the repository')
 class PyLint(Base):
 
     @classmethod
