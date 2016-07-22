@@ -7,21 +7,21 @@ from subprocess import check_output, CalledProcessError
 from os.path import exists, join
 
 def pollseries(repodir, pwproject):
-    listseries = []
-    cmd        = 'cd %s;git pw poll-events --name series-new-revision' % repodir
-    timestamp  = '.git-pw.%s.poll.timestamp' % pwproject
+    listseriesrev = []
+    cmd           = 'cd %s;git pw poll-events --name series-new-revision' % repodir
+    timestamp     = '.git-pw.%s.poll.timestamp' % pwproject
 
     if exists(join(repodir, timestamp)):
         events = check_output(cmd, shell=True)
         for event in events.splitlines():
             series = loads(event)
-            listseries.append(series['series'])
+            listseriesrev.append((series['series'], series['parameters']['revision']))
     else:
         # just consume all events
         while check_output(cmd, shell=True):
             pass
 
-    return ' '.join([str(s) for s in listseries])
+    return ' '.join(['.'.join([str(s),str(r)]) for s,r in listseriesrev])
 
 if __name__ == '__main__':
 
