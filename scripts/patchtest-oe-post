@@ -3,29 +3,67 @@
 set -o nounset
 set -o errexit
 
-# TODO: to be passed as arguments
-polldir="/home/lsandov1/postpoky"
-postdir="/home/lsandov1/postpoky"
-testdir="/home/lsandov1/repos/patchtest-oe/tests"
-resultsdir="/home/lsandov1/cron/patchtest"
+function usage() {
+    echo -e "\$ $0 -r <repodir> -t <testdir> -R <resultsdir>"
+    exit 1
+}
+
+#Check the number of arguments
+NUMARGS=$#
+if [ ! $NUMARGS -eq 6 ]; then
+    usage
+fi
+
+while getopts ":r:t:R:h" opt; do
+    case $opt in
+	r)
+	    repodir=$OPTARG
+	    ;;
+	t)
+	    testdir=$OPTARG
+	    ;;
+	R)
+	    resultsdir=$OPTARG
+	    ;;
+	h)
+	    usage
+	    ;;
+	\?)
+	    echo "Invalid option: -$OPTARG" >&2
+	    usage
+	    ;;
+	:)
+	    echo "Option -$OPTARG requires an argument." >&2
+	    usage
+	    ;;
+    esac
+done
 
 [ ! -d ${resultsdir} ] && { mkdir -p ${resultsdir}; }
 
-newseries="$(patchtest-oe-poll-series ${polldir})"
+newseries="$(patchtest-oe-poll-series ${repodir})"
 
 failure="failure"
 success="success"
 testname="patchtest"
 
-for series in ${newseries}; do
-    rawsummary="${resultsdir}/${series}.raw.summary"
-    finalsummary="${resultsdir}/${series}.summary"
-    ( cd ${polldir}; git pw mbox ${series} | \
-	patchtest - \
-	    -C         $polldir \
-	    --test-dir $testdir \
-	    --json ) >  $rawsummary
+for seriesrev in ${newseries}; do
 
+    series="$(echo $seriesrev | cut -d. -f1)"
+    revision="$(echo $seriesrev | cut -d. -f2)"
+
+    rawsummary="${resultsdir}/${series}.${revision}.raw.summary"
+    finalsummary="${resultsdir}/${series}.${revision}.summary"
+
+    # test the patch and store the raw summary
+    ( cd ${repodir}; git pw mbox ${series} -r ${revision} | \
+	patchtest - \
+	    -C         $repodir \
+	    --test-dir $testdir \
+	    --json \
+    ) >  $rawsummary
+
+    # create the final summary
     if [ "$(cat ${rawsummary} | patchtest-oe-any-fail)" == "yes" ]; then
 	cat ${rawsummary} | grep '"status": "FAIL"' | patchtest-oe-summary > ${finalsummary}
 	result=$failure
@@ -35,12 +73,14 @@ for series in ${newseries}; do
 	result=$success
     fi
 
-    # Post resutls
-    ( cd ${postdir}; git pw post-result \
+    # Post results
+    ( cd ${repodir}; git pw post-result \
 	$series \
 	$testname \
 	$result \
-	--summary-from-file ${finalsummary} )
+	--revision ${revision} \
+	--summary-from-file ${finalsummary} \
+    )
 
     echo "Tested Series: ${series}. Result: ${result}."
 done
