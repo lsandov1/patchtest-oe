@@ -45,7 +45,7 @@ and include your signature:
     $ git format-patch -1
 
 NOTE: Make sure you have configured git before, setting name and email
-correctly"""
+correctly""")
     def test_signed_off_by_format(self):
         for newpatch in PatchSignedOffBy.newpatches:
             payload = str(newpatch)
