@@ -29,7 +29,6 @@ import re
 from functools import wraps
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pyparsing'))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'doc'))
 
 logger=getLogger('patchtest')
 debug=logger.debug
