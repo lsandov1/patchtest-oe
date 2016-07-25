@@ -1,6 +1,6 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from base import Base, info, error
+from base import Base, fix
 from pylint import epylint as lint
 from re import sub
 from unittest import skipUnless
@@ -31,6 +31,7 @@ class PyLint(Base):
                 (pylint_stdout, pylint_stderr) = lint.py_run(pythonpatch.path, return_std=True)
                 d['pylint_pretest'].extend(pylint_stdout.readlines())
 
+    @fix("Check your modified python lines with pylint, specially those lines introduced by your patch")
     def test_pylint(self):
         if not PyLint.pythonpatches:
             self.skipTest('No python related patches, skipping test')
