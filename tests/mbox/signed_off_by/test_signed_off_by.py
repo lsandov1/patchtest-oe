@@ -1,6 +1,6 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from base import Base
+from base import Base, fix
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 from re import compile, match
@@ -14,6 +14,12 @@ class SignedOffBy(Base):
         cls.mark = str(signed_off_by_mark).strip('"')
         cls.prog = compile("(?<!\+)%s" % cls.mark)
 
+    @fix("""
+Amend the commit including your signature:
+
+    $ git commit --amend -s
+    $ git format-patch -1
+    $ git send-email --to <target mailing list> <created patch>""")
     def test_signed_off_by_presence(self):
         for i in xrange(SignedOffBy.nmessages):
             payload = SignedOffBy.payloads[i]
@@ -22,6 +28,14 @@ class SignedOffBy(Base):
                            ('Description', SignedOffBy.descriptions[i])])
 
     @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')
+    @fix("""
+Amend the commit including your signature:
+
+    $ git commit --amend -s
+    $ git format-patch -1
+    $ git send-email --to <target mailing list> <created patch>
+
+NOTE: Make sure you have set your name and e-mail on the git configuration""")
     def test_signed_off_by_format(self):
         for payload in SignedOffBy.payloads:
             if not payload or not SignedOffBy.prog.search(payload):
