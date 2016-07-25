@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 
+# Test every patch from files folder and output error on failure
 #
-# From the selftest/files folder, takes each patch (containing the test id
-# and expected result), run patchtest and compares output (expected versus
-# actual result). In case results do not match, print the test id
+# Copyright (C) 2016 Intel Corporation
 #
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import os
 from os.path import join, dirname, abspath
