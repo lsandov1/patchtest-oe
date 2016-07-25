@@ -30,8 +30,8 @@ def fix(msg):
 
 class Base(TestCase):
     # if unit test fails, fail message will throw at least the following JSON: [('ID', testid)]
-    testid = 'testid'
-    fix    = 'fix'
+    testid = 'Test ID'
+    fix    = 'Proposed Fix'
 
     regex_enddescriptions = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
 

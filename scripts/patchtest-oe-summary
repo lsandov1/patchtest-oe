@@ -5,9 +5,6 @@ from os.path import join, dirname, realpath
 import fileinput
 from json import loads
 
-sys.path.insert(0, join(dirname(dirname(realpath(__file__))), 'doc'))
-from fixes import fixes
-
 header = """Thank you for your patch submission of the following patch series to
 OE-Core - this is an automated response. Several tests have been executed
 on this proposed patch yielding the following results:"""
@@ -38,16 +35,17 @@ def summary(jsonlines):
         result      = loads(jsonline)
         status      = result['status']
         data        = result['data']
+
+        # First row corresponds to the test ID, pop it a provide a shorter test id string
         testidtuple = data.pop(0)
+        keytestid   = testidtuple[0]
         fulltestid  = testidtuple[1]
         shorttestid = '.'.join(fulltestid.split('.')[-2:])
+        data.insert(0, (keytestid, shorttestid))
 
+        # we do not care about tests done before merge (pretest tests)
         if 'pretest' in fulltestid:
             continue
-
-        # First and second rows always correspond to the test ID and the proposed Fix
-        data.insert(0, ('Test ID',      shorttestid))
-        data.insert(1, ('Proposed Fix', fixes[shorttestid]))
 
         print '%s\n' % ('-'*80)
         for k, v in data:
