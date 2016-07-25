@@ -1,6 +1,6 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from base import warn, Base
+from base import warn, Base, fix
 from patchtestdata import PatchTestInput as pti
 from subprocess import check_output, CalledProcessError, STDOUT
 from os.path import basename
@@ -61,6 +61,13 @@ class BitbakeParse(Base):
         except CalledProcessError as e:
             raise self.fail(formatdata(e))
 
+    @fix("""Make sure you can (bitbake) parse manually after patching:
+
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -p
+    """)
     def test_bitbake_parse(self):
         try:
             bitbake_check_output(['-p'])
@@ -73,6 +80,12 @@ class BitbakeParse(Base):
         except CalledProcessError as e:
             raise self.fail(formatdata(e))
 
+    @fix("""Make sure you can get the (bitbake) environment manually after patching:
+
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -e""")
     def test_bitbake_environment(self):
         try:
             bitbake_check_output(['-e'])
@@ -96,6 +109,13 @@ class BitbakeParse(Base):
                 except CalledProcessError as e:
                     raise self.fail(formatdata(e))
 
+    @fix("""Make sure you can get the environment manually on a specific target after patching:
+
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -e <target>
+    """)
     def test_bitbake_environment_on_target(self):
         pn_pv_list = [basename(recipe.path) for recipe in BitbakeParse.recipes]
         pn_list = [(pn_pv, BitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
