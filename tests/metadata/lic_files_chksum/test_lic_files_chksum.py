@@ -1,6 +1,6 @@
 import sys, os, re
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from base import Base, info
+from base import Base, fix
 from unittest import skip
 from parse_subject import subject
 
@@ -20,6 +20,7 @@ class LicFilesChkSum(Base):
                 if patch.is_added_file:
                     cls.newpatchrecipes.append(patch)
 
+    @fix("Specify the variable LIC_FILES_CHKSUM on your new recipe")
     def test_lic_files_chksum_presence(self):
         for patch in self.newpatchrecipes:
             payload = str(patch)
@@ -27,6 +28,7 @@ class LicFilesChkSum(Base):
             if not self.addmark.search(payload):
                 raise self.fail()
 
+    @fix("Provide a reason for the checksum change on the commit's summary")
     def test_lic_files_chksum_modified_not_mentioned(self):
         for i in range(LicFilesChkSum.nmessages):
             payload = LicFilesChkSum.payloads[i]
