@@ -19,10 +19,10 @@
 
 import sys, os
 
-# New test cases should inherit from base
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from base import Base, info
+from unittest import skip
 
+@skip('Sample Test Case, so no need to execute')
 class Sample(Base):
 
     def test_mbox(self):

@@ -1,5 +1,3 @@
-import sys, os, re
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from base import Base
 from unittest import skip
 
@@ -12,7 +10,7 @@ from unittest import skip
 # regex so giving false positives, so for the moment this test
 # will be skipped
 
-@skip('Parsing the patch turns empty lines into lines with one space, so skipping the test')
+@skip('Not accepted by community and also it could catch false positives')
 class TrailingSpaces(Base):
 
     def test_patch_trailing_spaces(self):
