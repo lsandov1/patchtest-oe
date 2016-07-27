@@ -20,6 +20,7 @@
 from base import Base, fix
 from unittest import skip
 from parse_subject import subject
+import re
 
 class LicFilesChkSum(Base):
 
