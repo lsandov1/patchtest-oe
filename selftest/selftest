@@ -23,7 +23,7 @@ from subprocess import check_output, STDOUT
 
 currentdir = dirname(abspath(__file__))
 patchesdir = join(currentdir, 'files')
-testsdir   = join(dirname(currentdir), 'tests')
+topdir     = dirname(currentdir)
 
 def test(root, patch):
     res = True
@@ -34,7 +34,7 @@ def test(root, patch):
     expected_result = a[-1]
     testid          = ".%s.%s" % (klass,testname)
 
-    cmd     = 'patchtest %s --test-dir %s' % (patchpath,testsdir)
+    cmd     = 'patchtest %s -t %s -s tests' % (patchpath, topdir)
     results = check_output(cmd, stderr=STDOUT, shell=True)
 
     for resultline in results.splitlines():
