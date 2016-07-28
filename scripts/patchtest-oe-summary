@@ -49,23 +49,23 @@ def summary(jsonlines):
     print "%s\n" % header
 
     for jsonline in jsonlines:
-        result      = loads(jsonline)
-        status      = result['status']
-        data        = result['data']
+        result  = loads(jsonline)
+        status  = result['status']
+        results = result['results']
 
         # First row corresponds to the test ID, pop it a provide a shorter test id string
-        testidtuple = data.pop(0)
+        testidtuple = results.pop(0)
         keytestid   = testidtuple[0]
         fulltestid  = testidtuple[1]
         shorttestid = '.'.join(fulltestid.split('.')[-2:])
-        data.insert(0, (keytestid, shorttestid))
+        results.insert(0, (keytestid, shorttestid))
 
         # we do not care about tests done before merge (pretest tests)
         if 'pretest' in fulltestid:
             continue
 
         print '%s\n' % ('-'*80)
-        for k, v in data:
+        for k, v in results:
             print(p(k, v))
         print '\n'
 
