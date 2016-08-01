@@ -22,7 +22,7 @@ from base import Base, fix
 
 class Bugzilla(Base):
     rexp_detect     = re.compile("\[.*YOCTO.*\]", re.IGNORECASE)
-    rexp_validation = re.compile("\[YOCTO #(\d+)\]$")
+    rexp_validation = re.compile("\[\s?YOCTO #(\d+)\s?\]$")
 
     @fix("""
 Amend the commit message and include the bugzilla entry at the end of the commit description as
@@ -31,9 +31,11 @@ Amend the commit message and include the bugzilla entry at the end of the commit
 
 where <bugzilla ID> is the bugzilla entry that this patch fixes""")
     def test_bugzilla_entry_format(self):
-        for description in Bugzilla.descriptions:
+        for nmessage in xrange(Bugzilla.nmessages):
+            description = Bugzilla.descriptions[nmessage]
             for line in description.splitlines():
                 if self.rexp_detect.match(line):
                     if not self.rexp_validation.match(line):
-                        self.fail([('Entry', line)])
+                        self.fail([('Entry', line),
+                                   ('Message subject', Bugzilla.subjects[nmessage])])
 
