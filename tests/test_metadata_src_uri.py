@@ -7,33 +7,29 @@ from unittest import skip
 
 class SrcUri(Base):
 
-    removepatch_regex = compile('-\s*file://(\S+\.patch)')
-    addpatch_regex    = compile('\+\s*file://(\S+\.patch)')
-    patch_regex       = compile('\.patch$')
+    metadata_regex = compile('[\+|-]\s*\S*file://(\S+\.\w*)')
 
     @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):
-        # get the removed patches indicated on diff data
-        removed_diff_patches = set()
-        for remove_file in SrcUri.patchset.removed_files:
-            path = remove_file.path
-            if self.patch_regex.search(path):
-                removed_diff_patches.add(os.path.basename(path))
+        # get the removed files indicated on diff data
+        removed_diff_files = set()
+        for removed_file in SrcUri.patchset.removed_files:
+            removed_diff_files.add(os.path.basename(removed_file.path))
 
-        # get the removed patches indicated on the bitbake metadata
-        removed_metadata_patches = set()
+        # get the removed files indicated on the bitbake metadata
+        removed_metadata_files = set()
         for payload in SrcUri.payloads:
             for line in payload.splitlines():
-                removematch = self.removepatch_regex.search(line)
-                addmatch    = self.addpatch_regex.search(line)
-                if removematch:
-                    removed_metadata_patches.add(removematch.group(1))
-                if addmatch:
-                    removed_metadata_patches.remove(addmatch.group(1))
+                match = self.metadata_regex.search(line)
+                if match:
+                    patch = match.group(1)
+                    if line.startswith('-'):
+                        removed_metadata_files.add(patch)
+                    if line.startswith('+'):
+                        if match in removed_metadata_files:
+                            removed_metadata_files.remove(patch)
 
-        # sets removed_diff_patches and removed_metadata_patches should be the same
-        # if not, lets check if other recipes need the patch file
-        if removed_metadata_patches.difference(removed_diff_patches):
+        if removed_metadata_files.difference(removed_diff_files):
             self.fail()
 
     @skip('pending')
