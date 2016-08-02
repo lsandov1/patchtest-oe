@@ -22,13 +22,12 @@ class SrcUri(Base):
             for line in payload.splitlines():
                 match = self.metadata_regex.search(line)
                 if match:
-                    patch     = match.group(1)
-                    patchname = os.path.basename(patch)
+                    fn = os.path.basename(match.group(1))
                     if line.startswith('-'):
-                        removed_metadata_files.add(patchname)
+                        removed_metadata_files.add(fn)
                     if line.startswith('+'):
-                        if patch in removed_metadata_files:
-                            removed_metadata_files.remove(patchname)
+                        if fn in removed_metadata_files:
+                            removed_metadata_files.remove(fn)
 
         if removed_metadata_files.difference(removed_diff_files):
             self.fail()
