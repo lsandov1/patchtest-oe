@@ -7,7 +7,7 @@ from unittest import skip
 
 class SrcUri(Base):
 
-    metadata_regex = compile('[\+|-]\s*\S*file://(\S+\.\w*)')
+    metadata_regex = compile('[\+|-]\s*\S*file://(\S+\.\w+)')
 
     @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):
@@ -22,12 +22,13 @@ class SrcUri(Base):
             for line in payload.splitlines():
                 match = self.metadata_regex.search(line)
                 if match:
-                    patch = match.group(1)
+                    patch     = match.group(1)
+                    patchname = os.path.basename(patch)
                     if line.startswith('-'):
-                        removed_metadata_files.add(patch)
+                        removed_metadata_files.add(patchname)
                     if line.startswith('+'):
                         if patch in removed_metadata_files:
-                            removed_metadata_files.remove(patch)
+                            removed_metadata_files.remove(patchname)
 
         if removed_metadata_files.difference(removed_diff_files):
             self.fail()
