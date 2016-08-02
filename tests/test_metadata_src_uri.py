@@ -26,7 +26,7 @@ class SrcUri(Base):
                     if line.startswith('-'):
                         removed_metadata_files.add(patch)
                     if line.startswith('+'):
-                        if match in removed_metadata_files:
+                        if patch in removed_metadata_files:
                             removed_metadata_files.remove(patch)
 
         if removed_metadata_files.difference(removed_diff_files):
