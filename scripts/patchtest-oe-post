@@ -20,17 +20,19 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 function usage() {
-    echo -e "\$ $0 -r <repodir> -s <startdir> -R <resultsdir>"
+    echo -e "\$ $0 -r <repodir> -s <startdir> -R <resultsdir> -p <pattern>"
     exit 1
 }
 
 #Check the number of arguments
 NUMARGS=$#
-if [ ! $NUMARGS -eq 6 ]; then
+if [ ! $NUMARGS -ge 6 ]; then
     usage
 fi
 
-while getopts ":r:s:R:h" opt; do
+pattern='*'
+
+while getopts ":r:s:R:p:h" opt; do
     case $opt in
 	r)
 	    repodir=$OPTARG
@@ -40,6 +42,9 @@ while getopts ":r:s:R:h" opt; do
 	    ;;
 	R)
 	    resultsdir=$OPTARG
+	    ;;
+	p)
+	    pattern=$OPTARG
 	    ;;
 	h)
 	    usage
@@ -76,6 +81,7 @@ for seriesrev in ${newseries}; do
 	patchtest - \
 	    -C $repodir \
 	    -s $startdir \
+	    -p $pattern \
 	    -j \
     ) >  $rawsummary
 
