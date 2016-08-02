@@ -20,7 +20,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 function usage() {
-    echo -e "\$ $0 -r <repodir> -t <testdir> -R <resultsdir>"
+    echo -e "\$ $0 -r <repodir> -s <startdir> -R <resultsdir>"
     exit 1
 }
 
@@ -30,13 +30,13 @@ if [ ! $NUMARGS -eq 6 ]; then
     usage
 fi
 
-while getopts ":r:t:R:h" opt; do
+while getopts ":r:s:R:h" opt; do
     case $opt in
 	r)
 	    repodir=$OPTARG
 	    ;;
-	t)
-	    testdir=$OPTARG
+	s)
+	    startdir=$OPTARG
 	    ;;
 	R)
 	    resultsdir=$OPTARG
@@ -74,9 +74,9 @@ for seriesrev in ${newseries}; do
     # test the patch and store the raw summary
     ( cd ${repodir}; git pw mbox ${series} -r ${revision} | \
 	patchtest - \
-	    -C         $repodir \
-	    --test-dir $testdir \
-	    --json \
+	    -C $repodir \
+	    -s $startdir \
+	    -j \
     ) >  $rawsummary
 
     # create the final summary
