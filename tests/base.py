@@ -64,8 +64,8 @@ class Base(TestCase):
             return description
 
         def subject(sub):
-            i = sub.find(']')
-            return sub[i+1:].replace('\n','').strip()
+            # remove possible prefix between brackets
+            return sub[sub.rfind(']')+1:].replace('\n','').strip()
 
         # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
