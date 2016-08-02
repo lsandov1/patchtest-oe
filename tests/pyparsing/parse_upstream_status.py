@@ -28,4 +28,4 @@ upstream_status_valid_status = Or([Literal(status) for status in ["Pending",
                                                                   "Denied",
                                                                   "Inappropriate"]])
 upstream_status_mark         = Literal("Upstream-Status")
-upstream_status              = start + upstream_status_mark + colon + upstream_status_valid_status + end
+upstream_status              = start + upstream_status_mark + colon + upstream_status_valid_status
