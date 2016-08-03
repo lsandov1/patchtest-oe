@@ -21,7 +21,7 @@ from base import Base, fix
 
 class Description(Base):
 
-    @fix("Please include a brief description for your patch")
+    @fix("Please include a commit message on your patch")
     def test_description_presence(self):
         for i in xrange(Description.nmessages):
             description = Description.descriptions[i]
