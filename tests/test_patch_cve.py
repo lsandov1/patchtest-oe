@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from base import Base, fix
+import os.path
 import re
 
 class CVE(Base):
@@ -47,6 +48,17 @@ http://openembedded.org/wiki/Commit_Patch_Message_Guidelines#CVE_Patches""")
         """
         Checks if patch contains CVE tag if "CVE-xxxx-xxxx" is in subject.
         """
+        
+        # there are cases where an upgrade is done in order
+        # to include a cve (or several) and it is mentioned
+        # on subject but there is no attached patch or patches
+        # because CVE is already on the upgrade sw
+        if len(CVE.patchset) == 2:
+            if self.re_cve_pattern.search(' '.join(CVE.subjects)):
+                recipes = [os.path.basename(p.path).split('_')[0] for p in CVE.patchset]
+                if recipes[0] == recipes[1]:
+                    return
+
         for i in xrange(CVE.nmessages):
             if self.re_cve_pattern.search(CVE.subjects[i]):
                 if not self.re_cve_tag.search(CVE.payloads[i]):
