@@ -37,7 +37,11 @@ class CVE(Base):
                     self.fail([('Subject', CVE.subjects[i])])
 
     @fix("""
-Please include the CVE tag on the patch added to the recipe, see:
+Please correct or include the CVE tag following this format:
+
+    CVE: CVE-YYYY-XXXX
+
+NOTE: For more information check
 http://openembedded.org/wiki/Commit_Patch_Message_Guidelines#CVE_Patches""")
     def test_cve_tag_format(self):
         """
