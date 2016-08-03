@@ -22,6 +22,6 @@
 from pyparsing import Word, alphanums, Literal, OneOrMore, printables, Optional
 from common import start, end, colon, opensquare, closesquare
 
-target        = OneOrMore(Word(alphanums+"/_-.+"))
+target        = OneOrMore(Word(alphanums+"/_-.,+"))
 summary       = OneOrMore(Word(printables))
 subject       = start + target + colon + summary + end
