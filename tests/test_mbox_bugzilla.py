@@ -22,7 +22,7 @@ from base import Base, fix
 
 class Bugzilla(Base):
     rexp_detect     = re.compile("\[.*YOCTO.*\]", re.IGNORECASE)
-    rexp_validation = re.compile("\[\s?YOCTO\s?#\s?(\d+)\s?\]$")
+    rexp_validation = re.compile("\[\s?YOCTO\s?#\s?(\d+)\s?\]")
 
     @fix("""
 Amend the commit message and include the bugzilla entry at the end of the commit description as
