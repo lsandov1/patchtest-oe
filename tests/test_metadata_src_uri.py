@@ -7,7 +7,7 @@ from unittest import skip
 
 class SrcUri(Base):
 
-    metadata_regex = compile('[\+|-]\s*\S*file://(\S+\.\w+)')
+    metadata_regex = compile('[\+|-]\s*\S*file://([^ \t\n\r\f\v;]+)(?!.*=.*)')
 
     @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):
@@ -29,8 +29,12 @@ class SrcUri(Base):
                         if fn in removed_metadata_files:
                             removed_metadata_files.remove(fn)
 
-        if removed_metadata_files.difference(removed_diff_files):
-            self.fail()
+        # every member of metadata must be a member of diff set, otherwise
+        # there are files removed from SRC_URI (contained in metadata set)
+        # but not from tree (contained in the diff set)
+        notremoved = removed_metadata_files - removed_diff_files
+        if notremoved:
+            self.fail(['Files not removed from tree', ' '.join(notremoved)])
 
     @skip('pending')
     def test_src_uri_checksums_not_changed(self):
