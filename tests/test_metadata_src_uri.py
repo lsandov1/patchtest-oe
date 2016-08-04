@@ -8,6 +8,8 @@ from unittest import skip
 class SrcUri(Base):
 
     metadata_regex = compile('[\+|-]\s*\S*file://([^ \t\n\r\f\v;]+)(?!.*=.*)')
+    src_regex      = compile('[\+|-]\s*SRC_URI = [\"|\'](\S+\.\w*)')
+    checksum_regex = compile('\S*\s*(SRC_URI\[\S*\] = [\"|\']\S*[\"|\'])')
 
     @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):
@@ -36,7 +38,37 @@ class SrcUri(Base):
         if notremoved:
             self.fail(['Files not removed from tree', ' '.join(notremoved)])
 
-    @skip('pending')
+    @fix("todo")
     def test_src_uri_checksums_not_changed(self):
+        checksums_new = set()
+        checksums_old = set()
+        checksums_exist = 0
+        src_exists = 0
+        srcuri_new = 0
+        srcuri_old = 0
         for patch in SrcUri.patchset:
             payload = str(patch)
+            for line in payload.splitlines():
+                src_uri_match  = self.src_regex.search(line)
+                checksum_match = self.checksum_regex.search(line)
+                if src_uri_match:
+                    if line.startswith('-'):
+                        srcuri_old = src_uri_match.group(1)
+                        src_exists = 1
+                    if line.startswith('+'):
+                        srcuri_new = src_uri_match.group(1)
+                if checksum_match:
+                    checksum = checksum_match.group(1)
+                    if line.startswith('+'):
+                        checksums_new.add(checksum)
+                    else:
+                        checksums_old.add(checksum)
+                    checksums_exist = 0
+                    if len(checksums_new) == len(checksums_old):
+                        checksums_exist = 1
+        if src_exists and srcuri_new:
+            if srcuri_old != srcuri_new:
+                if not checksums_exist:
+                    self.fail()
+                elif checksums_old.intersection(checksums_new):
+                    self.fail()
