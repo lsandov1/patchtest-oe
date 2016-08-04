@@ -54,7 +54,7 @@ http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
         for newpatch in PatchUpstreamStatus.newpatches:
             payload = str(newpatch)
             if not self.upstream_status_regex.search(payload):
-                self.fail()
+                self.fail([('Patch path', newpatch.path)])
 
     @fix("""
 Every patch added next to a recipe must have an Upstream-Status
