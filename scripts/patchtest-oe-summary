@@ -21,10 +21,11 @@ import sys
 from os.path import join, dirname, realpath
 import fileinput
 from json import loads
+from argparse import ArgumentParser
 
 header = """Thank you for your patch submission of the following patch series to
 OE-Core - this is an automated response. Several tests have been executed
-on this proposed patch yielding the following results:"""
+on this proposed patch (series %s, revision %s) yielding the following results:"""
 
 footer = """If you believe any of these test results are incorrect, please reply
 to the mailing list (openembedded-core@lists.openembedded.org) raising 
@@ -45,11 +46,14 @@ def p(key, value, leftwidth=20, maxwidth=80):
         output.append('{:{}s} {:<{}s}'.format(space, leftwidth, line, rightwidth))
     return '\n'.join(output)
 
-def summary(jsonlines):
-    print "%s\n" % header
+def summary(stdin, series='', revision=''):
 
-    for jsonline in jsonlines:
-        result  = loads(jsonline)
+    seriesheader = header % (series,revision)
+
+    print "%s\n" % seriesheader
+
+    for line in stdin:
+        result  = loads(line)
         status  = result['status']
         results = result['results']
 
@@ -73,9 +77,15 @@ def summary(jsonlines):
     print "\n%s" % footer
 
 if __name__ == '__main__':
+    parser = ArgumentParser(description="Create a summary")
+    parser.add_argument('series',    help='Poll series since the specify date')
+    parser.add_argument('revision',  help='Repository directory')
+    args = parser.parse_args()
+
     ret = 1
     try:
-        ret = summary(fileinput.input('-'))
+        stdin = fileinput.input('-')
+        ret = summary(stdin, args.series, args.revision)
     except:
         import traceback
         traceback.print_exc(5)
