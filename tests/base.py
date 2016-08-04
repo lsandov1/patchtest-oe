@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from unittest import TestCase
+from unittest import TestCase, SkipTest
 from logging import getLogger
 from json import dumps
 from unidiff import PatchSet, UnidiffParseError
@@ -66,6 +66,12 @@ class Base(TestCase):
         def subject(sub):
             # remove possible prefix between brackets
             return sub[sub.rfind(']')+1:].replace('\n','').strip()
+
+        # Check if patch exists and not empty
+        if not os.path.exists(pti.repo.patch):
+            raise SkipTest('Patch not found')
+        if os.path.getsize(pti.repo.patch) == 0:
+            raise SkipTest('Empty patch')
 
         # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
