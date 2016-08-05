@@ -36,7 +36,7 @@ class SrcUri(Base):
         # but not from tree (contained in the diff set)
         notremoved = removed_metadata_files - removed_diff_files
         if notremoved:
-            self.fail(['Files not removed from tree', ' '.join(notremoved)])
+            self.fail([('Files not removed from tree', ' '.join(notremoved))])
 
     @fix("todo")
     def test_src_uri_checksums_not_changed(self):
