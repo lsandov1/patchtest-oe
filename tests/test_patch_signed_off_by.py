@@ -38,12 +38,7 @@ class PatchSignedOffBy(Base):
         # match PatchSignedOffBy.mark with '+' preceding it
         cls.prog = compile("(?<=\+)%s" % cls.mark)
 
-    @fix("""
-Every patch added next to a recipe must be signed off, so amend every commit
-and include your signature:
-
-    $ git commit --amend -s
-    $ git format-patch -1""")
+    @fix("Sign off the added patch")
     def test_signed_off_by_presence(self):
         if not PatchSignedOffBy.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % PatchSignedOffBy.mark)
@@ -51,18 +46,13 @@ and include your signature:
         for newpatch in PatchSignedOffBy.newpatches:
             payload = str(newpatch)
             if not PatchSignedOffBy.prog.search(payload):
-                self.fail()
+                self.fail([('Patch', newpatch.path)])
 
     @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')
     @fix("""
-Every patch added next to a recipe must be signed off, so amend every commit
-and include your signature:
-
-    $ git commit --amend -s
-    $ git format-patch -1
-
-NOTE: Make sure you have configured git before, setting name and email
-correctly""")
+Sign off the added patch with the right format. More info on
+http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines
+""")
     def test_signed_off_by_format(self):
         for newpatch in PatchSignedOffBy.newpatches:
             payload = str(newpatch)

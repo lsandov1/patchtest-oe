@@ -27,7 +27,7 @@ class CVE(Base):
     re_cve_word    = re.compile("\s*\+CVE\s?", re.IGNORECASE)
     re_cve_tag     = re.compile("CVE:(\s+CVE\-\d{4}\-\d+)+", re.IGNORECASE)
 
-    @fix("Please include the CVE, as CVE-xxxx-xxxx, in the subject")
+    @fix("Please include the CVE, as CVE-xxxx-xxxx, in the shortlog")
     def test_cve_presence_on_subject(self):
         """
         Checks if CVE-xxxx-xxxx is in subject if CVE word is in the payload.

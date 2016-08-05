@@ -44,7 +44,7 @@ class LicFilesChkSum(Base):
             payload = str(patch)
             # verify that patch includes license file information
             if not self.addmark.search(payload):
-                raise self.fail()
+                self.fail([('Recipe', patch.path)])
 
     @fix("Provide a reason for the checksum change on shortlog")
     def test_lic_files_chksum_modified_not_mentioned(self):
@@ -56,4 +56,4 @@ class LicFilesChkSum(Base):
                 # now lets search in the commit message (summary and description)
                 if (not self.licensemarks.search(subject)) and \
                    (not self.licensemarks.search(description)):
-                    raise self.fail()
+                    self.fai([('Subject', subject)])
