@@ -125,5 +125,5 @@ for seriesrev in ${newseries}; do
 	--summary-from-file ${finalsummary} \
     )
 
-    echo -e "Tested Series: ${series}. Result: ${result}." >&2
+    echo -e "Tested Series ${series} Revision ${revision}. Result: ${result}." >&2
 done
