@@ -47,6 +47,9 @@ where <target> is the filename where main code changes apply""")
             if not subject.strip():
                 self.skipTest('Empty subject, no reason to execute subject format test')
             else:
+                # no reason to re-check on revert shortlogs
+                if subject.startswith('Revert "'):
+                    continue
                 try:
                     parse_subject.subject.parseString(subject)
                 except ParseException as pe:
@@ -56,6 +59,9 @@ where <target> is the filename where main code changes apply""")
     @fix("Commit summary must not exceed 80 characters")
     def test_subject_length(self):
         for subject in Subject.subjects:
+            # no reason to re-check on revert shortlogs
+            if subject.startswith('Revert "'):
+                continue
             l = len(subject)
             if l > Subject.maxlength:
                 self.fail([('Subject', subject), ('Length', 'Current length %s Max length %s' % (l, Subject.maxlength))])
