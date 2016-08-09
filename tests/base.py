@@ -51,14 +51,14 @@ class Base(TestCase):
     testid = 'Test ID'
     fix    = 'Proposed Fix'
 
-    regex_enddescriptions = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
+    enddescriptions_regex = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
 
     @classmethod
     def setUpClass(cls):
 
         def description(payload):
             description = str()
-            match = cls.regex_enddescriptions.search(payload)
+            match = cls.enddescriptions_regex.search(payload)
             if match:
                 description = payload[:match.start()]
             return description
