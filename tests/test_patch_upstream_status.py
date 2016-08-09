@@ -53,7 +53,12 @@ http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
 
         for newpatch in PatchUpstreamStatus.newpatches:
             payload = str(newpatch)
-            if not self.upstream_status_regex.search(payload):
+            for line in payload.splitlines():
+                if self.patchmetadata_regex.match(line):
+                    continue
+                if self.upstream_status_regex.search(payload):
+                    break
+            else:
                 self.fail([('Patch path', newpatch.path)])
 
     @fix("""
@@ -71,6 +76,8 @@ http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
             if not self.upstream_status_regex.search(payload):
                 continue
             for line in payload.splitlines():
+                if self.patchmetadata_regex.match(line):
+                    continue
                 if self.upstream_status_regex.search(line):
                     try:
                         upstream_status.parseString(line.lstrip('+'))

@@ -42,8 +42,12 @@ class LicFilesChkSum(Base):
     def test_lic_files_chksum_presence(self):
         for patch in self.newpatchrecipes:
             payload = str(patch)
-            # verify that patch includes license file information
-            if not self.addmark.search(payload):
+            for line in payload.splitlines():
+                if self.patchmetadata_regex.match(line):
+                    continue
+                if self.addmark.search(payload):
+                    break
+            else:
                 self.fail([('Recipe', patch.path)])
 
     @fix("Provide a reason for the checksum change on shortlog")

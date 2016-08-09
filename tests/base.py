@@ -52,6 +52,7 @@ class Base(TestCase):
     fix    = 'Proposed Fix'
 
     enddescriptions_regex = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
+    patchmetadata_regex   = re.compile('-{3} \S+|\+{3} \S+|@{2} -\d+,\d+ \+\d+,\d+ @{2} \S+')
 
     @classmethod
     def setUpClass(cls):

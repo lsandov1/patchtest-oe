@@ -20,8 +20,11 @@ class SrcUri(Base):
 
         # get the removed files indicated on the bitbake metadata
         removed_metadata_files = set()
-        for payload in SrcUri.payloads:
+        for patch in SrcUri.patchset:
+            payload = str(patch)
             for line in payload.splitlines():
+                if self.patchmetadata_regex.match(line):
+                    continue
                 match = self.metadata_regex.search(line)
                 if match:
                     fn = os.path.basename(match.group(1))
@@ -49,6 +52,8 @@ class SrcUri(Base):
         for patch in SrcUri.patchset:
             payload = str(patch)
             for line in payload.splitlines():
+                if self.patchmetadata_regex.match(line):
+                    continue
                 src_uri_match  = self.src_regex.search(line)
                 checksum_match = self.checksum_regex.search(line)
                 if src_uri_match:
