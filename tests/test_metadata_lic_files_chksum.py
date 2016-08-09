@@ -56,4 +56,4 @@ class LicFilesChkSum(Base):
                 # now lets search in the commit message (summary and description)
                 if (not self.licensemarks.search(subject)) and \
                    (not self.licensemarks.search(description)):
-                    self.fai([('Subject', subject)])
+                    self.fail([('Subject', subject)])
