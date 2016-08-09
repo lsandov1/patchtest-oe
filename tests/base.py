@@ -64,8 +64,11 @@ class Base(TestCase):
             return description
 
         def subject(sub):
-            # remove possible prefix between brackets
-            return sub[sub.rfind(']')+1:].replace('\n','').strip()
+            # remove possible prefix (between brackets) before colon
+            start = sub.find(']', 0, sub.find(':'))
+
+            # remove also newlines and spaces at both sides
+            return sub[start + 1:].replace('\n', '').strip()
 
         # Check if patch exists and not empty
         if not os.path.exists(pti.repo.patch):
