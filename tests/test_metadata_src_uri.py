@@ -7,7 +7,7 @@ from unittest import skip
 
 class SrcUri(Base):
 
-    metadata_regex = compile('[\+|-]\s*\S*file://([^ \t\n\r\f\v;]+)(?!.*=.*)')
+    metadata_regex = compile('[\+|-]\s*\S*file://([^ \t\n\r\f\v;\'\"]+)(?!.*=.*)')
     src_regex      = compile('[\+|-]\s*SRC_URI = [\"|\'](\S+\.\w*)')
     checksum_regex = compile('\S*\s*(SRC_URI\[\S*\] = [\"|\']\S*[\"|\'])')
 
@@ -39,7 +39,7 @@ class SrcUri(Base):
         # but not from tree (contained in the diff set)
         notremoved = removed_metadata_files - removed_diff_files
         if notremoved:
-            self.fail([('Files not removed from tree', ' '.join(notremoved))])
+            self.fail([('Files not removed from tree', '\n'.join(notremoved))])
 
     @fix("todo")
     def test_src_uri_checksums_not_changed(self):
