@@ -41,7 +41,7 @@ Amend the commit including your signature:
         for i in xrange(SignedOffBy.nmessages):
             payload = SignedOffBy.payloads[i]
             if not SignedOffBy.prog.search(payload):
-                self.fail([('Subject',     SignedOffBy.subjects[i]),
+                self.fail([('Subject',     SignedOffBy.shortlogs[i]),
                            ('Description', SignedOffBy.descriptions[i])])
 
     @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')

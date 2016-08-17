@@ -19,7 +19,7 @@
 
 from base import Base, fix
 from unittest import skip
-from parse_subject import subject
+from parse_shortlog import shortlog
 import re
 
 class LicFilesChkSum(Base):
@@ -55,9 +55,9 @@ class LicFilesChkSum(Base):
         for i in range(LicFilesChkSum.nmessages):
             payload = LicFilesChkSum.payloads[i]
             if self.addmark.search(payload) and self.removemark.search(payload):
-                subject     = LicFilesChkSum.subjects[i]
+                shortlog     = LicFilesChkSum.shortlogs[i]
                 description = LicFilesChkSum.descriptions[i]
                 # now lets search in the commit message (summary and description)
-                if (not self.licensemarks.search(subject)) and \
+                if (not self.licensemarks.search(shortlog)) and \
                    (not self.licensemarks.search(description)):
-                    self.fail([('Subject', subject)])
+                    self.fail([('Subject', shortlog)])

@@ -18,10 +18,10 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from base import Base, fix
-import parse_subject
+import parse_shortlog
 from pyparsing import ParseException
 
-class Subject(Base):
+class Shortlog(Base):
 
     maxlength = 80
 
@@ -31,9 +31,9 @@ Amend the commit message and include a summary with the following format:
     <target>: <summary>
 
 where <target> is the filename where main code changes apply""")
-    def test_subject_presence(self):
-        for subject in Subject.subjects:
-            if not subject.strip():
+    def test_shortlog_presence(self):
+        for shortlog in Shortlog.shortlogs:
+            if not shortlog.strip():
                 self.fail()
 
     @fix("""
@@ -42,26 +42,26 @@ Amend the commit message and include a summary with the following format:
 <target>: <summary>
 
 where <target> is the filename where main code changes apply""")
-    def test_subject_format(self):
-        for subject in Subject.subjects:
-            if not subject.strip():
-                self.skipTest('Empty subject, no reason to execute subject format test')
+    def test_shortlog_format(self):
+        for shortlog in Shortlog.shortlogs:
+            if not shortlog.strip():
+                self.skipTest('Empty shortlog, no reason to execute shortlog format test')
             else:
                 # no reason to re-check on revert shortlogs
-                if subject.startswith('Revert "'):
+                if shortlog.startswith('Revert "'):
                     continue
                 try:
-                    parse_subject.subject.parseString(subject)
+                    parse_shortlog.shortlog.parseString(shortlog)
                 except ParseException as pe:
-                    self.fail([('Subject', pe.line),
+                    self.fail([('Shortlog', pe.line),
                                ('Column',  pe.col)])
 
     @fix("Commit summary must not exceed 80 characters")
-    def test_subject_length(self):
-        for subject in Subject.subjects:
+    def test_shortlog_length(self):
+        for shortlog in Shortlog.shortlogs:
             # no reason to re-check on revert shortlogs
-            if subject.startswith('Revert "'):
+            if shortlog.startswith('Revert "'):
                 continue
-            l = len(subject)
-            if l > Subject.maxlength:
-                self.fail([('Subject', subject), ('Length', 'Current length %s Max length %s' % (l, Subject.maxlength))])
+            l = len(shortlog)
+            if l > Shortlog.maxlength:
+                self.fail([('Shortlog', shortlog), ('Length', 'Current length %s Max length %s' % (l, Shortlog.maxlength))])

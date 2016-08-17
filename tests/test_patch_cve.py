@@ -28,14 +28,14 @@ class CVE(Base):
     re_cve_tag     = re.compile("CVE:(\s+CVE\-\d{4}\-\d+)+", re.IGNORECASE)
 
     @fix("Please include the CVE, as CVE-xxxx-xxxx, in the shortlog")
-    def test_cve_presence_on_subject(self):
+    def test_cve_presence_on_shortlog(self):
         """
-        Checks if CVE-xxxx-xxxx is in subject if CVE word is in the payload.
+        Checks if CVE-xxxx-xxxx is in shortlog if CVE word is in the payload.
         """
         for i in xrange(CVE.nmessages):
             if self.re_cve_word.search(CVE.payloads[i]):
-                if not self.re_cve_pattern.search(CVE.subjects[i]):
-                    self.fail([('Subject', CVE.subjects[i])])
+                if not self.re_cve_pattern.search(CVE.shortlogs[i]):
+                    self.fail([('Subject', CVE.shortlogs[i])])
 
     @fix("""
 Please correct or include the CVE tag following this format:
@@ -46,20 +46,20 @@ NOTE: For more information check
 http://openembedded.org/wiki/Commit_Patch_Message_Guidelines#CVE_Patches""")
     def test_cve_tag_format(self):
         """
-        Checks if patch contains CVE tag if "CVE-xxxx-xxxx" is in subject.
+        Checks if patch contains CVE tag if "CVE-xxxx-xxxx" is in shortlog.
         """
         
         # there are cases where an upgrade is done in order
         # to include a cve (or several) and it is mentioned
-        # on subject but there is no attached patch or patches
+        # on shortlog but there is no attached patch or patches
         # because CVE is already on the upgrade sw
         if len(CVE.patchset) == 2:
-            if self.re_cve_pattern.search(' '.join(CVE.subjects)):
+            if self.re_cve_pattern.search(' '.join(CVE.shortlogs)):
                 recipes = [os.path.basename(p.path).split('_')[0] for p in CVE.patchset]
                 if recipes[0] == recipes[1]:
                     return
 
         for i in xrange(CVE.nmessages):
-            if self.re_cve_pattern.search(CVE.subjects[i]):
+            if self.re_cve_pattern.search(CVE.shortlogs[i]):
                 if not self.re_cve_tag.search(CVE.payloads[i]):
-                    self.fail([('Subject', CVE.subjects[i])])
+                    self.fail([('Subject', CVE.shortlogs[i])])

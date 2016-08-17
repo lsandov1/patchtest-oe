@@ -37,5 +37,5 @@ where <bugzilla ID> is the bugzilla entry that this patch fixes""")
                 if self.rexp_detect.match(line):
                     if not self.rexp_validation.match(line):
                         self.fail([('Entry', line),
-                                   ('Message subject', Bugzilla.subjects[nmessage])])
+                                   ('Message shortlog', Bugzilla.shortlogs[nmessage])])
 

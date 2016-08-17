@@ -26,6 +26,6 @@ class Description(Base):
         for i in xrange(Description.nmessages):
             description = Description.descriptions[i]
             if not description.strip():
-                subject = Description.subjects[i]
-                self.fail([('Message Subject', subject)])
+                shortlog = Description.shortlogs[i]
+                self.fail([('Message Subject', shortlog)])
 

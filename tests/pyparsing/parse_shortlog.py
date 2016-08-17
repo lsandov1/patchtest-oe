@@ -24,4 +24,4 @@ from common import start, end, colon, opensquare, closesquare
 
 target        = OneOrMore(Word(alphanums+"/_-.,+"))
 summary       = OneOrMore(Word(printables))
-subject       = start + target + colon + summary + end
+shortlog       = start + target + colon + summary + end

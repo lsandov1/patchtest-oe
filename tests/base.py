@@ -64,13 +64,12 @@ class Base(TestCase):
                 description = payload[:match.start()]
             return description
 
-        def subject(sub):
+        def shortlog(shlog):
             # remove possible prefix (between brackets) before colon
-            start = sub.find(']', 0, sub.find(':'))
+            start = shlog.find(']', 0, shlog.find(':'))
 
             # remove also newlines and spaces at both sides
-            return sub[start + 1:].replace('\n', '').strip()
-
+            return shlog[start + 1:].replace('\n', '').strip()
         # Check if patch exists and not empty
         if not os.path.exists(pti.repo.patch):
             raise SkipTest('Patch not found')
@@ -82,9 +81,9 @@ class Base(TestCase):
         f = open(pti.repo.patch, 'r')
         cls.patchset = PatchSet(f, encoding=u'UTF-8')
 
-        # Derived objects: nmessages, subjects, payloads and descriptions
+        # Derived objects: nmessages, shortlogs, payloads and descriptions
         cls.nmessages    = len(cls.mbox)
-        cls.subjects     = [subject(msg['subject']) for msg in cls.mbox]
+        cls.shortlogs     = [shortlog(msg['subject']) for msg in cls.mbox]
         cls.payloads     = [msg.get_payload()       for msg in cls.mbox]
         cls.descriptions = [description(pay)        for pay in cls.payloads]
 
