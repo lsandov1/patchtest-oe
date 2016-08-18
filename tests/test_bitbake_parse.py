@@ -50,7 +50,6 @@ def formatdata(e):
 
     return list([('Command', e.cmd), ('Output', grep(e.output)), ('Return Code', e.returncode)])
 
-@skipUnless(pti.merge, 'Test suite only makes sense when patch is merged into the repository')
 class BitbakeParse(Base):
 
     @classmethod

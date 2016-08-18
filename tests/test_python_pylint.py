@@ -25,7 +25,6 @@ from patchtestdata import PatchTestInput as pti
 
 from patchtestdata import PatchTestDataStore as d
 
-@skipUnless(pti.merge, 'Test suite only makes sense when patch is merged into the repository')
 class PyLint(Base):
 
     @classmethod
