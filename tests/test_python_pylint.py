@@ -49,6 +49,10 @@ class PyLint(Base):
 
     @fix("Check your modified python lines with pylint, specially those lines introduced by your patch")
     def test_pylint(self):
+
+        # test method is skipped if neither patch could not be merged nor patch does not involve python code
+        if not pti.repo.patchmerged:
+            self.skipTest('Patch could not be merged, no reason to execute the test method')
         if not PyLint.pythonpatches:
             self.skipTest('No python related patches, skipping test')
 

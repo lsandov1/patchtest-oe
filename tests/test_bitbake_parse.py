@@ -29,9 +29,9 @@ def bitbake_check_output(args):
     bitbake_cmd = 'bitbake %s' % ' '.join(args)
 
     # change dir, prepare system and exec bitbake
-    cmd = 'cd %s;source %s/oe-init-build-env;%s' % (pti.repodir,
-                                                    pti.repodir,
-                                                    bitbake_cmd)
+    cmd = 'cd %s;. %s/oe-init-build-env;%s' % (pti.repodir,
+                                               pti.repodir,
+                                               bitbake_cmd)
     return check_output(cmd, stderr=STDOUT, shell=True)
 
 def formatdata(e):
@@ -85,6 +85,8 @@ class BitbakeParse(Base):
     $ bitbake -p
     """)
     def test_bitbake_parse(self):
+        if not pti.repo.patchmerged:
+            self.skipTest('Patch could not be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-p'])
         except CalledProcessError as e:
@@ -103,6 +105,8 @@ class BitbakeParse(Base):
     $ source oe-init-build-env
     $ bitbake -e""")
     def test_bitbake_environment(self):
+        if not pti.repo.patchmerged:
+            self.skipTest('Patch could not be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-e'])
         except CalledProcessError as e:
@@ -133,6 +137,8 @@ class BitbakeParse(Base):
     $ bitbake -e <target>
     """)
     def test_bitbake_environment_on_target(self):
+        if not pti.repo.patchmerged:
+            self.skipTest('Patch could not be merged, no reason to execute the test method')
         pn_pv_list = [basename(recipe.path) for recipe in BitbakeParse.recipes]
         pn_list = [(pn_pv, BitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
