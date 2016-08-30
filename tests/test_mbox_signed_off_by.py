@@ -42,7 +42,7 @@ Amend the commit including your signature:
             payload = SignedOffBy.payloads[i]
             if not SignedOffBy.prog.search(payload):
                 self.fail([('Subject',     SignedOffBy.shortlogs[i]),
-                           ('Description', SignedOffBy.descriptions[i])])
+                           ('Commit Message', SignedOffBy.commit_messages[i])])
 
     @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')
     @fix("""

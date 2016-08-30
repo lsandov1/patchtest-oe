@@ -25,15 +25,15 @@ class Bugzilla(Base):
     rexp_validation = re.compile("\[\s?YOCTO\s?#\s?(\d+)\s?\]")
 
     @fix("""
-Amend the commit message and include the bugzilla entry at the end of the commit description as
+Amend the commit message and include the bugzilla entry at the end of the commit commit_message as
 
     [YOCTO #<bugzilla ID>]
 
 where <bugzilla ID> is the bugzilla entry that this patch fixes""")
     def test_bugzilla_entry_format(self):
         for nmessage in xrange(Bugzilla.nmessages):
-            description = Bugzilla.descriptions[nmessage]
-            for line in description.splitlines():
+            commit_message = Bugzilla.commit_messages[nmessage]
+            for line in commit_message.splitlines():
                 if self.rexp_detect.match(line):
                     if not self.rexp_validation.match(line):
                         self.fail([('Entry', line),

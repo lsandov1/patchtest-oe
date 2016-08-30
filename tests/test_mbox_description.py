@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Checks related to the patch's description
+# Checks related to the patch's commit_message
 #
 # Copyright (C) 2016 Intel Corporation
 #
@@ -19,13 +19,13 @@
 
 from base import Base, fix
 
-class Description(Base):
+class CommitMessage(Base):
 
     @fix("Please include a commit message on your patch")
-    def test_description_presence(self):
-        for i in xrange(Description.nmessages):
-            description = Description.descriptions[i]
-            if not description.strip():
-                shortlog = Description.shortlogs[i]
+    def test_commit_message_presence(self):
+        for i in xrange(CommitMessage.nmessages):
+            commit_message = CommitMessage.commit_messages[i]
+            if not commit_message.strip():
+                shortlog = CommitMessage.shortlogs[i]
                 self.fail([('Message Subject', shortlog)])
 

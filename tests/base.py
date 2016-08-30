@@ -51,18 +51,18 @@ class Base(TestCase):
     testid = 'Test ID'
     fix    = 'Proposed Fix'
 
-    enddescriptions_regex = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
+    endcommit_messages_regex = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
     patchmetadata_regex   = re.compile('-{3} \S+|\+{3} \S+|@{2} -\d+,\d+ \+\d+,\d+ @{2} \S+')
 
     @classmethod
     def setUpClass(cls):
 
-        def description(payload):
-            description = str()
-            match = cls.enddescriptions_regex.search(payload)
+        def commit_message(payload):
+            commit_message = str()
+            match = cls.endcommit_messages_regex.search(payload)
             if match:
-                description = payload[:match.start()]
-            return description
+                commit_message = payload[:match.start()]
+            return commit_message
 
         def shortlog(shlog):
             # remove possible prefix (between brackets) before colon
@@ -81,11 +81,11 @@ class Base(TestCase):
         f = open(pti.repo.patch, 'r')
         cls.patchset = PatchSet(f, encoding=u'UTF-8')
 
-        # Derived objects: nmessages, shortlogs, payloads and descriptions
+        # Derived objects: nmessages, shortlogs, payloads and commit_messages
         cls.nmessages    = len(cls.mbox)
         cls.shortlogs     = [shortlog(msg['subject']) for msg in cls.mbox]
         cls.payloads     = [msg.get_payload()       for msg in cls.mbox]
-        cls.descriptions = [description(pay)        for pay in cls.payloads]
+        cls.commit_messages = [commit_message(pay)        for pay in cls.payloads]
 
         cls.setUpClassLocal()
 

@@ -56,8 +56,8 @@ class LicFilesChkSum(Base):
             payload = LicFilesChkSum.payloads[i]
             if self.addmark.search(payload) and self.removemark.search(payload):
                 shortlog     = LicFilesChkSum.shortlogs[i]
-                description = LicFilesChkSum.descriptions[i]
-                # now lets search in the commit message (summary and description)
+                commit_message = LicFilesChkSum.commit_messages[i]
+                # now lets search in the commit message (summary and commit_message)
                 if (not self.licensemarks.search(shortlog)) and \
-                   (not self.licensemarks.search(description)):
+                   (not self.licensemarks.search(commit_message)):
                     self.fail([('Subject', shortlog)])
