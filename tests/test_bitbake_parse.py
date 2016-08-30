@@ -72,6 +72,8 @@ class BitbakeParse(Base):
         cls.reciperegex = compile("(?P<pn>^\S+)(_\S+)")
 
     def pretest_bitbake_parse(self):
+        if not pti.repo.canbemerged:
+            self.skipTest('Patch cannot be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-p'])
         except CalledProcessError as e:
@@ -85,7 +87,7 @@ class BitbakeParse(Base):
     $ bitbake -p
     """)
     def test_bitbake_parse(self):
-        if not pti.repo.patchmerged:
+        if not pti.repo.ismerged:
             self.skipTest('Patch could not be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-p'])
@@ -93,6 +95,8 @@ class BitbakeParse(Base):
             raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment(self):
+        if not pti.repo.canbemerged:
+            self.skipTest('Patch cannot be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-e'])
         except CalledProcessError as e:
@@ -105,7 +109,7 @@ class BitbakeParse(Base):
     $ source oe-init-build-env
     $ bitbake -e""")
     def test_bitbake_environment(self):
-        if not pti.repo.patchmerged:
+        if not pti.repo.ismerged:
             self.skipTest('Patch could not be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-e'])
@@ -113,6 +117,8 @@ class BitbakeParse(Base):
             raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment_on_target(self):
+        if not pti.repo.canbemerged:
+            self.skipTest('Patch cannot be merged, no reason to execute the test method')
         if not BitbakeParse.modifiedrecipes:
             self.skipTest("Patch data does not modified any bb or bbappend file")
 
@@ -137,7 +143,7 @@ class BitbakeParse(Base):
     $ bitbake -e <target>
     """)
     def test_bitbake_environment_on_target(self):
-        if not pti.repo.patchmerged:
+        if not pti.repo.ismerged:
             self.skipTest('Patch could not be merged, no reason to execute the test method')
         pn_pv_list = [basename(recipe.path) for recipe in BitbakeParse.recipes]
         pn_list = [(pn_pv, BitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
