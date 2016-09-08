@@ -19,63 +19,26 @@
 
 import sys
 from os.path import join, dirname, realpath
+from os import environ
 import fileinput
 from json import loads
 from argparse import ArgumentParser
+from jinja2 import Environment, FileSystemLoader
 
-header = """Thank you for your patch submission of the following patch series to
-OE-Core - this is an automated response. Several tests have been executed
-on this proposed patch (series %s, revision %s) yielding the following results:"""
-
-footer = """If you believe any of these test results are incorrect, please reply
-to the mailing list (openembedded-core@lists.openembedded.org) raising 
-your concerns. Otherwise we would appreciate you correcting the issues
-and submitting a new version of the patchset if applicable. Please
-ensure you add/increment the version number when sending the new
-version (i.e. [PATCH] -> [PATCH v2] -> [PATCH v3] -> ...)."""
-
-def p(key, value, leftwidth=20, maxwidth=80):
-    space, output = ' ', list()
-    key, value = str(key), str(value)
-    if not key or not value:
-        return
-    key, lines = key.strip(), value.strip().splitlines()
-    rightwidth = maxwidth - leftwidth
-    output.append('{:{}s} {:<{}s}'.format(key, leftwidth, lines[0], rightwidth))
-    for line in lines[1:]:
-        output.append('{:{}s} {:<{}s}'.format(space, leftwidth, line, rightwidth))
-    return '\n'.join(output)
+THISDIR = environ['PTOE'] + '/scripts'
+env = Environment(loader=FileSystemLoader(THISDIR))
+template = env.get_template('summary.j2')
 
 def summary(stdin, series='', revision=''):
-
-    seriesheader = header % (series,revision)
-
-    print "%s\n" % seriesheader
-
+    results_list = []
     for line in stdin:
         result  = loads(line)
         status  = result['status']
         results = result['results']
-
-        # First row corresponds to the test ID, pop it a provide a shorter test id string
-        testidtuple = results.pop(0)
-        keytestid   = testidtuple[0]
-        fulltestid  = testidtuple[1]
-        shorttestid = '.'.join(fulltestid.split('.')[-2:])
-        results.insert(0, (keytestid, shorttestid))
-
-        # we do not care about tests done before merge (pretest tests)
-        if 'pretest' in fulltestid:
-            continue
-
-        print '%s\n' % ('-'*80)
-        for k, v in results:
-            print(p(k, v))
-        print '\n'
-
-    print '%s' % ('-'*80)
-    print "\n%s" % footer
-
+        if not 'pretest' in results[0][1]:
+           results_list.append(results)
+    output_from_parsed_template = template.render(series_id = series, revision_number = revision, pt_results = results_list)
+    print output_from_parsed_template
 if __name__ == '__main__':
     parser = ArgumentParser(description="Create a summary")
     parser.add_argument('series',    help='Poll series since the specify date')
