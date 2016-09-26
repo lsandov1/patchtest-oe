@@ -41,7 +41,7 @@ class LicFilesChkSum(Base):
     @fix("Specify the variable LIC_FILES_CHKSUM on your new recipe")
     def test_lic_files_chksum_presence(self):
         for patch in self.newpatchrecipes:
-            payload = str(patch)
+            payload = patch.__str__()
             for line in payload.splitlines():
                 if self.patchmetadata_regex.match(line):
                     continue

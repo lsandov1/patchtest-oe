@@ -26,7 +26,7 @@ class TrailingSpaces(Base):
         """
 
         for patch in TrailingSpaces.patchset:
-            payload = str(patch)
+            payload = patch.__str__()
             for line in payload.splitlines():
                  if re.search('.\s$',line):
                     self.fail()

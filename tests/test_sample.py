@@ -64,7 +64,7 @@ class Sample(Base):
 
         # Loop through all patches and print length
         for patch in Sample.patchset:
-            diffdata = str(patch)
+            diffdata = patch.__str__()
             info('%s %s' % (patch.path, len(diffdata)))
         else:
             info('')

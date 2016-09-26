@@ -44,7 +44,7 @@ class PatchSignedOffBy(Base):
             self.skipTest("There are no new software patches, no reason to test %s presence" % PatchSignedOffBy.mark)
 
         for newpatch in PatchSignedOffBy.newpatches:
-            payload = str(newpatch)
+            payload = newpatch.__str__()
             for line in payload.splitlines():
                 if self.patchmetadata_regex.match(line):
                     continue
@@ -60,7 +60,7 @@ http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines
 """)
     def test_signed_off_by_format(self):
         for newpatch in PatchSignedOffBy.newpatches:
-            payload = str(newpatch)
+            payload = newpatch.__str__()
             if not payload or not PatchSignedOffBy.prog.search(payload):
                 self.skipTest("%s not present, skipping format test" % PatchSignedOffBy.mark)
             for line in payload.splitlines():

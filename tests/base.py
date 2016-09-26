@@ -58,7 +58,7 @@ class Base(TestCase):
     def setUpClass(cls):
 
         def commit_message(payload):
-            commit_message = str()
+            commit_message = payload.__str__()
             match = cls.endcommit_messages_regex.search(payload)
             if match:
                 commit_message = payload[:match.start()]
@@ -82,10 +82,10 @@ class Base(TestCase):
         cls.patchset = PatchSet(f, encoding=u'UTF-8')
 
         # Derived objects: nmessages, shortlogs, payloads and commit_messages
-        cls.nmessages    = len(cls.mbox)
-        cls.shortlogs     = [shortlog(msg['subject']) for msg in cls.mbox]
-        cls.payloads     = [msg.get_payload()       for msg in cls.mbox]
-        cls.commit_messages = [commit_message(pay)        for pay in cls.payloads]
+        cls.nmessages       = len(cls.mbox)
+        cls.shortlogs       = [shortlog(msg['subject']) for msg in cls.mbox]
+        cls.payloads        = [msg.get_payload() for msg in cls.mbox]
+        cls.commit_messages = [commit_message(pay) for pay in cls.payloads]
 
         cls.setUpClassLocal()
 

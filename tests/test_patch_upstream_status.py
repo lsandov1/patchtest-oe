@@ -52,7 +52,7 @@ http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.upstream_status_mark)
 
         for newpatch in PatchUpstreamStatus.newpatches:
-            payload = str(newpatch)
+            payload = newpatch.__str__()
             for line in payload.splitlines():
                 if self.patchmetadata_regex.match(line):
                     continue
@@ -72,7 +72,7 @@ NOTE: For more information on the meaning of each status, check
 http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
     def test_upstream_status_format(self):
         for newpatch in PatchUpstreamStatus.newpatches:
-            payload = str(newpatch)
+            payload = newpatch.__str__()
             if not self.upstream_status_regex.search(payload):
                 continue
             for line in payload.splitlines():
