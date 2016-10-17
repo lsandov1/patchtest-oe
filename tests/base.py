@@ -70,11 +70,6 @@ class Base(TestCase):
 
             # remove also newlines and spaces at both sides
             return shlog[start + 1:].replace('\n', '').strip()
-        # Check if patch exists and not empty
-        if not os.path.exists(pti.repo.patch):
-            raise SkipTest('Patch not found')
-        if os.path.getsize(pti.repo.patch) == 0:
-            raise SkipTest('Empty patch')
 
         # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
