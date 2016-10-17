@@ -37,6 +37,10 @@ class CVE(Base):
                 if not self.re_cve_pattern.search(CVE.shortlogs[i]):
                     self.fail([('Subject', CVE.shortlogs[i])])
 
+    def setUp(self):
+        if self.unidiff_parse_error:
+            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+
     @fix("""
 Please correct or include the CVE tag following this format:
 

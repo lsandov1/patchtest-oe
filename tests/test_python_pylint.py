@@ -35,6 +35,10 @@ class PyLint(Base):
             if patch.path.endswith('.py'):
                 cls.pythonpatches.append(patch)
 
+    def setUp(self):
+        if self.unidiff_parse_error:
+            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+
     def pretest_pylint(self):
         if not pti.repo.canbemerged:
             self.skipTest('Patch cannot be merged, no reason to execute the test method')

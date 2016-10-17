@@ -11,6 +11,10 @@ class SrcUri(Base):
     src_regex      = compile('[\+|-]\s*SRC_URI = [\"|\'](\S+\.\w*)')
     checksum_regex = compile('\S*\s*(SRC_URI\[\S*\] = [\"|\']\S*[\"|\'])')
 
+    def setUp(self):
+        if self.unidiff_parse_error:
+            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+
     @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):
         # get the removed files indicated on diff data

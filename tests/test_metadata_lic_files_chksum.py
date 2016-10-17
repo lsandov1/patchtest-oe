@@ -38,6 +38,10 @@ class LicFilesChkSum(Base):
                 if patch.is_added_file:
                     cls.newpatchrecipes.append(patch)
 
+    def setUp(self):
+        if self.unidiff_parse_error:
+            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+
     @fix("Specify the variable LIC_FILES_CHKSUM on your new recipe")
     def test_lic_files_chksum_presence(self):
         for patch in self.newpatchrecipes:

@@ -37,6 +37,9 @@ class PatchUpstreamStatus(Base):
             if patch.path.endswith('.patch') and patch.is_added_file:
                 cls.newpatches.append(patch)
 
+    def setUp(self):
+        if self.unidiff_parse_error:
+            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
 
     @fix("""
 Every patch added next to a recipe must have an Upstream-Status

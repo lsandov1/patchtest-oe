@@ -73,8 +73,15 @@ class Base(TestCase):
 
         # General objects: mbox and patchset
         cls.mbox = mbox(pti.repo.patch)
-        f = open(pti.repo.patch, 'r')
-        cls.patchset = PatchSet(f, encoding=u'UTF-8')
+
+        # Patch may be malformed, so try parsing it
+        cls.unidiff_parse_error = ''
+        cls.patchset = None
+        try:
+            cls.patchset = PatchSet.from_filename(pti.repo.patch, encoding=u'UTF-8')
+        except UnidiffParseError as upe:
+            cls.patchset = []
+            cls.unidiff_parse_error = upe.message
 
         # Derived objects: nmessages, shortlogs, payloads and commit_messages
         cls.nmessages       = len(cls.mbox)
@@ -102,6 +109,16 @@ class Base(TestCase):
             value.extend(data)
 
         return super(Base, self).fail(dumps(value))
+
+    def skip(self, data=[]):
+        """ Convert the skip string to JSON"""
+        value = list([(Base.testid, self.id())])
+
+        # extend return value with other useful info
+        if data:
+            value.extend(data)
+
+        return super(Base, self).skipTest(dumps(value))
 
     def __str__(self):
         return dumps(list([(Base.testid, self.id())]))

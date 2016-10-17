@@ -71,6 +71,10 @@ class BitbakeParse(Base):
         # regex to extract the recipe name on a recipe filename
         cls.reciperegex = compile("(?P<pn>^\S+)(_\S+)")
 
+    def setUp(self):
+        if self.unidiff_parse_error:
+            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+
     def pretest_bitbake_parse(self):
         if not pti.repo.canbemerged:
             self.skipTest('Patch cannot be merged, no reason to execute the test method')
