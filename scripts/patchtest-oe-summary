@@ -25,10 +25,6 @@ from json import loads
 from argparse import ArgumentParser
 from jinja2 import Environment, FileSystemLoader
 
-THISDIR = environ['PTOE'] + '/scripts'
-env = Environment(loader=FileSystemLoader(THISDIR))
-template = env.get_template('summary.j2')
-
 def summary(stdin, series='', revision=''):
     results_list = []
     for line in stdin:
@@ -36,9 +32,15 @@ def summary(stdin, series='', revision=''):
         status  = result['status']
         results = result['results']
         if not 'pretest' in results[0][1]:
-           results_list.append(results)
-    output_from_parsed_template = template.render(series_id = series, revision_number = revision, pt_results = results_list)
+            results_list.append(results)
+
+    env = Environment(loader=FileSystemLoader(dirname(__file__)))
+    template = env.get_template('summary.j2')
+    output_from_parsed_template = template.render(series_id=series,
+                                                  revision_number=revision,
+                                                  pt_results=results_list)
     print output_from_parsed_template
+
 if __name__ == '__main__':
     parser = ArgumentParser(description="Create a summary")
     parser.add_argument('series',    help='Poll series since the specify date')
