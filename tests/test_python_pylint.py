@@ -20,11 +20,12 @@
 from base import Base, fix
 from pylint import epylint as lint
 from re import sub
-from unittest import skipUnless
+from unittest import skip
 from patchtestdata import PatchTestInput as pti
 
 from patchtestdata import PatchTestDataStore as d
 
+@skip('Test case is not ready yet, pending openembedded recipe and module review')
 class PyLint(Base):
 
     @classmethod
