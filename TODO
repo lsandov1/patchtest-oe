@@ -1,5 +1,0 @@
-* Test cases from the folder 'todo' has not being implemented: all these fail
-* POSTing code should moved from patchtest to patchtest-oe
-* Create a set of patches that are intended to assert test cases
-* Automatic patch testing code should be moved from patchtest to patchtest-oe (scripts/run-patchtest.sh)
-
