@@ -27,7 +27,7 @@ class Merge(Base):
     @fix("Rebase your series on top of master's HEAD")
     def test_merge(self):
         def headlog():
-            return check_output("cd %s; git log --pretty='%h: %aN: %cd: %s' -1" % pti.repodir, shell=True)
+            return check_output("cd %s; git log --pretty='%%h: %%aN: %%cd: %%s' -1" % pti.repodir, shell=True)
 
         if not pti.repo.ismerged:
             self.fail([('HEAD shortlog', headlog())])
