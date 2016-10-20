@@ -22,7 +22,7 @@ from patchtestdata import PatchTestInput as pti
 from subprocess import check_output, CalledProcessError, STDOUT
 from os.path import basename
 from re import compile
-from unittest import skipUnless
+from unittest import skip
 from patchtestdata import PatchTestInput as pti
 
 def bitbake_check_output(args):
@@ -50,6 +50,7 @@ def formatdata(e):
 
     return list([('Command', e.cmd), ('Output', grep(e.output)), ('Return Code', e.returncode)])
 
+@skip('Default guest machine is not ready for development')
 class BitbakeParse(Base):
 
     @classmethod
