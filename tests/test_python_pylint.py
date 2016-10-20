@@ -18,7 +18,6 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from base import Base, fix
-from pylint import epylint as lint
 from re import sub
 from unittest import skip
 from patchtestdata import PatchTestInput as pti
@@ -27,6 +26,7 @@ from patchtestdata import PatchTestDataStore as d
 
 @skip('Test case is not ready yet, pending openembedded recipe and module review')
 class PyLint(Base):
+    from pylint import epylint as lint
 
     @classmethod
     def setUpClassLocal(cls):
