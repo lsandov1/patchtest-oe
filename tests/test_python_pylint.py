@@ -26,7 +26,10 @@ from patchtestdata import PatchTestDataStore as d
 
 @skip('Test case is not ready yet, pending openembedded recipe and module review')
 class PyLint(Base):
-    from pylint import epylint as lint
+    try:
+        from pylint import epylint as lint
+    except ImportError as ie:
+        pass
 
     @classmethod
     def setUpClassLocal(cls):
