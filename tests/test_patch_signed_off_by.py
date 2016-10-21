@@ -56,23 +56,3 @@ class PatchSignedOffBy(Base):
                     break
             else:
                 self.fail([('Patch', newpatch.path)])
-
-    @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')
-    @fix("""
-Sign off the added patch with the right format. More info on
-http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines
-""")
-    def test_signed_off_by_format(self):
-        for newpatch in PatchSignedOffBy.newpatches:
-            payload = newpatch.__str__()
-            if not payload or not PatchSignedOffBy.prog.search(payload):
-                self.skipTest("%s not present, skipping format test" % PatchSignedOffBy.mark)
-            for line in payload.splitlines():
-                if self.patchmetadata_regex.match(line):
-                    continue
-                if PatchSignedOffBy.prog.search(line):
-                    try:
-                        signed_off_by.parseString(line.lstrip('+'))
-                    except ParseException as pe:
-                        self.fail([('line', pe.line), ('column', pe.col)])
-
