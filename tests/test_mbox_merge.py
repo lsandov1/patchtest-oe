@@ -31,12 +31,13 @@ def headlog():
 
 class Merge(Base):
 
-    @fix("Rebase your series on top of master's HEAD")
-    def test_merge(self):
+    @fix("Rebase your series on top of targeted branch")
+    def test_series_merge_on_head(self):
         if not pti.repo.ismerged:
             commithash, author, date, shortlog = headlog()
             self.fail([
-                ('HEAD commit hash', commithash),
+                ('Targeted branch', pti.repo.branch),
+                ('HEAD commit', commithash),
                 ('HEAD author', author),
                 ('HEAD date', date),
                 ('HEAD shortlog', shortlog)])
