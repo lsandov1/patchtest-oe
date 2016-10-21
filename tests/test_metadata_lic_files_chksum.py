@@ -40,7 +40,7 @@ class LicFilesChkSum(Base):
 
     def setUp(self):
         if self.unidiff_parse_error:
-            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+            self.skip([('Parse error', self.unidiff_parse_error)])
 
     @fix("Specify the variable LIC_FILES_CHKSUM on your new recipe")
     def test_lic_files_chksum_presence(self):
@@ -52,7 +52,7 @@ class LicFilesChkSum(Base):
                 if self.addmark.search(payload):
                     break
             else:
-                self.fail([('Recipe', patch.path)])
+                self.fail([('Path recipe', patch.path)])
 
     @fix("Provide a reason for the checksum change on shortlog")
     def test_lic_files_chksum_modified_not_mentioned(self):
@@ -64,4 +64,4 @@ class LicFilesChkSum(Base):
                 # now lets search in the commit message (summary and commit_message)
                 if (not self.licensemarks.search(shortlog)) and \
                    (not self.licensemarks.search(commit_message)):
-                    self.fail([('Subject', shortlog)])
+                    self.fail([('Commit shortlog', shortlog)])

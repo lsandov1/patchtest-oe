@@ -31,36 +31,9 @@ class SignedOffBy(Base):
         cls.mark = str(signed_off_by_mark).strip('"')
         cls.prog = compile("(?<!\+)%s" % cls.mark)
 
-    @fix("""
-Amend the commit including your signature:
-
-    $ git commit --amend -s
-    $ git format-patch -1
-    $ git send-email --to <target mailing list> <created patch>""")
+    @fix("Sign off the series")
     def test_signed_off_by_presence(self):
         for i in xrange(SignedOffBy.nmessages):
             payload = SignedOffBy.payloads[i]
             if not SignedOffBy.prog.search(payload):
-                self.fail([('Subject',     SignedOffBy.shortlogs[i]),
-                           ('Commit Message', SignedOffBy.commit_messages[i])])
-
-    @skip('due to http://bugzilla.yoctoproject.org/show_bug.cgi?id=9959')
-    @fix("""
-Amend the commit including your signature:
-
-    $ git commit --amend -s
-    $ git format-patch -1
-    $ git send-email --to <target mailing list> <created patch>
-
-NOTE: Make sure you have set your name and e-mail on the git configuration""")
-    def test_signed_off_by_format(self):
-        for payload in SignedOffBy.payloads:
-            if not payload or not SignedOffBy.prog.search(payload):
-                self.skipTest("%s not present, skipping format test" % SignedOffBy.mark)
-            for line in payload.splitlines():
-                if match(self.mark, line):
-                    try:
-                        signed_off_by.parseString(line)
-                    except ParseException as pe:
-                        self.fail([('line', pe.line), ('column', pe.col)])
-
+                self.fail([('Commit shortlog', SignedOffBy.shortlogs[i])])

@@ -13,7 +13,7 @@ class SrcUri(Base):
 
     def setUp(self):
         if self.unidiff_parse_error:
-            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+            self.skip([('Parse error', self.unidiff_parse_error)])
 
     @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):

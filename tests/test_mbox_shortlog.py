@@ -21,27 +21,17 @@ from base import Base, fix
 import parse_shortlog
 from pyparsing import ParseException
 
+maxlength = 80
+
 class Shortlog(Base):
 
-    maxlength = 80
-
-    @fix("""
-Amend the commit message and include a summary with the following format:
-
-    <target>: <summary>
-
-where <target> is the filename where main code changes apply""")
+    @fix("Provide a commit shortlog in your series' patch")
     def test_shortlog_presence(self):
         for shortlog in Shortlog.shortlogs:
             if not shortlog.strip():
                 self.fail()
 
-    @fix("""
-Amend the commit message and include a summary with the following format:
-
-<target>: <summary>
-
-where <target> is the filename where main code changes apply""")
+    @fix("Commit shortlog must follow the format '<target>: <summary>'")
     def test_shortlog_format(self):
         for shortlog in Shortlog.shortlogs:
             if not shortlog.strip():
@@ -53,15 +43,16 @@ where <target> is the filename where main code changes apply""")
                 try:
                     parse_shortlog.shortlog.parseString(shortlog)
                 except ParseException as pe:
-                    self.fail([('Shortlog', pe.line),
+                    self.fail([('Commit shortlog', pe.line),
                                ('Column',  pe.col)])
 
-    @fix("Commit summary must not exceed 80 characters")
+    @fix("Provide a commit shortlog no longer that %s characters" % maxlength)
     def test_shortlog_length(self):
         for shortlog in Shortlog.shortlogs:
             # no reason to re-check on revert shortlogs
             if shortlog.startswith('Revert "'):
                 continue
             l = len(shortlog)
-            if l > Shortlog.maxlength:
-                self.fail([('Shortlog', shortlog), ('Length', 'Current length %s Max length %s' % (l, Shortlog.maxlength))])
+            if l > maxlength:
+                self.fail([('Commit shortlog', shortlog),
+                           ('Current length', l)])

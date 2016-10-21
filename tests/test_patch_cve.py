@@ -27,32 +27,20 @@ class CVE(Base):
     re_cve_word    = re.compile("\s*\+CVE\s?", re.IGNORECASE)
     re_cve_tag     = re.compile("CVE:(\s+CVE\-\d{4}\-\d+)+", re.IGNORECASE)
 
-    @fix("Please include the CVE, as CVE-xxxx-xxxx, in the shortlog")
+    def setUp(self):
+        if self.unidiff_parse_error:
+            self.skip([('Parse error', self.unidiff_parse_error)])
+
+    @fix("Include a 'CVE-xxxx-xxxx' tag in the commit shortlog")
     def test_cve_presence_on_shortlog(self):
-        """
-        Checks if CVE-xxxx-xxxx is in shortlog if CVE word is in the payload.
-        """
         for i in xrange(CVE.nmessages):
             if self.re_cve_word.search(CVE.payloads[i]):
                 if not self.re_cve_pattern.search(CVE.shortlogs[i]):
                     self.fail([('Subject', CVE.shortlogs[i])])
 
-    def setUp(self):
-        if self.unidiff_parse_error:
-            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
 
-    @fix("""
-Please correct or include the CVE tag following this format:
-
-    CVE: CVE-YYYY-XXXX
-
-NOTE: For more information check
-http://openembedded.org/wiki/Commit_Patch_Message_Guidelines#CVE_Patches""")
+    @fix("Correct or include the CVE tag on cve patch with format:'CVE: CVE-YYYY-XXXX'")
     def test_cve_tag_format(self):
-        """
-        Checks if patch contains CVE tag if "CVE-xxxx-xxxx" is in shortlog.
-        """
-        
         # there are cases where an upgrade is done in order
         # to include a cve (or several) and it is mentioned
         # on shortlog but there is no attached patch or patches

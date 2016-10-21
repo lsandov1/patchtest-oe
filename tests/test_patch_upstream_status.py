@@ -19,7 +19,8 @@
 
 from base import Base, fix
 
-from parse_upstream_status import upstream_status, upstream_status_valid_status
+from parse_upstream_status import upstream_status
+from parse_upstream_status import upstream_status_literal_valid_status as valid_status
 from parse_upstream_status import upstream_status_mark as mark
 from pyparsing import ParseException
 from re import compile, search
@@ -41,15 +42,7 @@ class PatchUpstreamStatus(Base):
         if self.unidiff_parse_error:
             self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
 
-    @fix("""
-Every patch added next to a recipe must have an Upstream-Status
-specified in the patch header having the value of Pending, Submitted, Accepted, Backport,
-Denied, or Inappropriate. Make sure your are following this format
-
-    Upstream-Status: <status>
-
-NOTE: For more information on the meaning of each status, check
-http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
+    @fix("Include Upstream-Status on the package patch")
     def test_upstream_status_presence(self):
         if not PatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.upstream_status_mark)
@@ -62,17 +55,11 @@ http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
                 if self.upstream_status_regex.search(payload):
                     break
             else:
-                self.fail([('Patch path', newpatch.path)])
+                self.fail([
+                    ('Possible Status', ', '.join(valid_status)),
+                    ('Patch path', newpatch.path)])
 
-    @fix("""
-Every patch added next to a recipe must have an Upstream-Status
-specified in the patch header having the value of Pending, Submitted, Accepted, Backport,
-Denied, or Inappropriate. Make sure your are following this format
-
-    Upstream-Status: <status>
-
-NOTE: For more information on the meaning of each status, check
-http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
+    @fix("Fix Upstream-Status format")
     def test_upstream_status_format(self):
         for newpatch in PatchUpstreamStatus.newpatches:
             payload = newpatch.__str__()
@@ -85,4 +72,7 @@ http://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines""")
                     try:
                         upstream_status.parseString(line.lstrip('+'))
                     except ParseException as pe:
-                        self.fail([('Line', pe.line), ('Column', pe.col)])
+                        self.fail([
+                            ('Required format', 'Upstream-Status: <status>'),
+                            ('Possible Status', ', '.join(valid_status)),
+                            ('Line', pe.line), ('Column', pe.col)])

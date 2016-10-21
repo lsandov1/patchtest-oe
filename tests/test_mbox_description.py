@@ -27,5 +27,5 @@ class CommitMessage(Base):
             commit_message = CommitMessage.commit_messages[i]
             if not commit_message.strip():
                 shortlog = CommitMessage.shortlogs[i]
-                self.fail([('Message Subject', shortlog)])
+                self.fail([('Commit shortlog', shortlog)])
 

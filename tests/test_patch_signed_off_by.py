@@ -40,7 +40,7 @@ class PatchSignedOffBy(Base):
 
     def setUp(self):
         if self.unidiff_parse_error:
-            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+            self.skip([('Parse error', self.unidiff_parse_error)])
 
     @fix("Sign off the added patch")
     def test_signed_off_by_presence(self):

@@ -22,12 +22,21 @@ from base import Base, fix
 from patchtestdata import PatchTestInput as pti
 from subprocess import check_output
 
+def headlog():
+    output = check_output(
+        "cd %s; git log --pretty='%%h#%%aN#%%cD:#%%s' -1" % pti.repodir,
+        shell=True
+        )
+    return output.split('#')
+
 class Merge(Base):
 
     @fix("Rebase your series on top of master's HEAD")
     def test_merge(self):
-        def headlog():
-            return check_output("cd %s; git log --pretty='%%h: %%aN: %%cd: %%s' -1" % pti.repodir, shell=True)
-
         if not pti.repo.ismerged:
-            self.fail([('HEAD shortlog', headlog())])
+            commithash, author, date, shortlog = headlog()
+            self.fail([
+                ('HEAD commit hash', commithash),
+                ('HEAD author', author),
+                ('HEAD date', date),
+                ('HEAD shortlog', shortlog)])

@@ -19,9 +19,9 @@
 
 from base import Base, fix
 
-class Parse(Base):
+class MboxFormat(Base):
 
-    @fix("Please create again the series using git-format-patch so it can be correctly parsed")
-    def test_parse_python_unidiff(self):
+    @fix("Create again the series using git-format-patch")
+    def test_mbox_format(self):
         if self.unidiff_parse_error:
-            self.fail([('Python-unidiff parse error', self.unidiff_parse_error)])
+            self.fail([('Parse error', self.unidiff_parse_error)])
