@@ -31,7 +31,7 @@ class SignedOffBy(Base):
         cls.mark = str(signed_off_by_mark).strip('"')
         cls.prog = compile("(?<!\+)%s" % cls.mark)
 
-    @fix("Sign off the series")
+    @fix("Sign off the patch")
     def test_signed_off_by_presence(self):
         for i in xrange(SignedOffBy.nmessages):
             payload = SignedOffBy.payloads[i]
