@@ -45,7 +45,8 @@ class SrcUri(Base):
         if notremoved:
             self.fail([('Files not removed from tree', '\n'.join(notremoved))])
 
-    @fix("todo")
+    @skip("Currently blocked by YOCTO #10059")
+    @fix("SRC_SRI so checksums must change")
     def test_src_uri_checksums_not_changed(self):
         checksums_new = set()
         checksums_old = set()
