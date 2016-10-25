@@ -1,0 +1,35 @@
+Patchtest-OE
+=========
+
+Introduction
+------------
+
+Patchtest-oe is a test suite intended to be used with patchtest [1], targeted for patches
+that get into the openembedded-core mailing list [2] correponding to [3] repository.
+
+Contributing
+------------
+
+The yocto mailing list (yocto@yoctoproject.org) is used for questions, comments and patch review.
+It is subscriber only, so please register before posting.
+
+Send pull requests to yocto@yoctoproject.org with '[patchtest-oe]' in the subject.
+
+When sending single patches, please use something like:
+
+    'git send-email -M -1 --to=yocto@yoctoproject.org  --subject-prefix=patchtest-oe][PATCH'
+
+Maintenance
+-----------
+
+Maintainers:
+    Leo Sandoval <leonardo.sandoval.gonzalez@linux.intel.com>
+    Paul "bluelightning" Eggleton <paul.eggleton@linux.intel.com>
+    Daniela Plascencia <daniela.plascencia@linux.intel.com>
+
+Links
+-----
+[1] http://git.yoctoproject.org/cgit/cgit.cgi/patchtest/
+[2] https://www.yoctoproject.org/tools-resources/community/mailing-lists
+[3] http://git.openembedded.org/openembedded-core/
+

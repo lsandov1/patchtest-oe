@@ -1,6 +1,0 @@
-== patchtest-oe: A Test Suite for testing OE-Core patches
-
-Patch test suite intended to be executed by http://git.yoctoproject.org/cgit/cgit.cgi/patchtest/[patchtest].
-Test cases are intended for series that goes into the OE-Core
-http://lists.openembedded.org/mailman/listinfo/openembedded-core[mailing list]. For installation and usage,
-follow the instructions located at the patchtest repository.
