@@ -21,7 +21,7 @@
 from common import start, end, colon
 from pyparsing import Or, Literal
 
-upstream_status_literal_valid_status = ["Pending", "Accepted", "Backport", "Denied", "Inappropriate"]
+upstream_status_literal_valid_status = ["Pending", "Submitted", "Accepted", "Backport", "Denied", "Inappropriate"]
 upstream_status_valid_status = Or(
     [Literal(status) for status in upstream_status_literal_valid_status]
 )
