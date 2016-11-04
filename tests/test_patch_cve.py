@@ -49,7 +49,12 @@ class CVE(Base):
             if self.re_cve_pattern.search(' '.join(CVE.shortlogs)):
                 recipes = [os.path.basename(p.path).split('_')[0] for p in CVE.patchset]
                 if recipes[0] == recipes[1]:
-                    return
+                    self.skipTest('No check is done on software upgrades')
+
+        # Skip check on metadata classes
+        if len(CVE.patchset) == 1:
+            if CVE.patchset[0].path.endswith('.bbclass'):
+                self.skipTest('No check is done on classes')
 
         for i in xrange(CVE.nmessages):
             if self.re_cve_pattern.search(CVE.shortlogs[i]):
