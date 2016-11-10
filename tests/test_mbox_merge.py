@@ -37,7 +37,4 @@ class Merge(Base):
             commithash, author, date, shortlog = headlog()
             self.fail([
                 ('Targeted branch', pti.repo.branch),
-                ('HEAD commit', commithash),
-                ('HEAD author', author),
-                ('HEAD date', date),
-                ('HEAD shortlog', shortlog)])
+                ('HEAD commit', commithash)])
