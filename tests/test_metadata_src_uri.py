@@ -15,6 +15,7 @@ class SrcUri(Base):
         if self.unidiff_parse_error:
             self.skip([('Parse error', self.unidiff_parse_error)])
 
+    @skip("Currently blocked by YOCTO #9874")
     @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):
         # get the removed files indicated on diff data
