@@ -22,6 +22,7 @@ from unittest import skip
 from parse_shortlog import shortlog
 import re
 
+@skip("Currently blocked by #10059")
 class LicFilesChkSum(Base):
 
     licensemarks = re.compile('LIC_FILES_CHKSUM|LICENSE|CHECKSUM|CHKSUM', re.IGNORECASE)
