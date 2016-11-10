@@ -27,6 +27,7 @@ class LicFilesChkSum(Base):
     licensemarks = re.compile('LIC_FILES_CHKSUM|LICENSE|CHECKSUM|CHKSUM', re.IGNORECASE)
     addmark      = re.compile('\s*\+LIC_FILES_CHKSUM\s*\??=')
     removemark   = re.compile('\s*-LIC_FILES_CHKSUM\s*\??=')
+    licclosed    = re.compile('\s*\+LICENSE\s*=\s*"CLOSED"')
     newpatchrecipes = []
 
     @classmethod
@@ -46,10 +47,13 @@ class LicFilesChkSum(Base):
     def test_lic_files_chksum_presence(self):
         for patch in self.newpatchrecipes:
             payload = patch.__str__()
+            # Closed licenses does not required LIC_FILES_CHKSUM
+            if self.licclosed.search(payload):
+                continue
             for line in payload.splitlines():
                 if self.patchmetadata_regex.match(line):
                     continue
-                if self.addmark.search(payload):
+                if self.addmark.search(line):
                     break
             else:
                 self.fail([('Path recipe', patch.path)])
