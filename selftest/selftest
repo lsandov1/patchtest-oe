@@ -18,16 +18,15 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import os
-from os.path import join, dirname, abspath
-from subprocess import check_output, STDOUT
+import subprocess
 
-currentdir = dirname(abspath(__file__))
-patchesdir = join(currentdir, 'files')
-topdir     = dirname(currentdir)
+currentdir = os.path.dirname(os.path.abspath(__file__))
+patchesdir = os.path.join(currentdir, 'files')
+topdir     = os.path.dirname(currentdir)
 
 def test(root, patch):
     res = True
-    patchpath = abspath(join(root, patch))
+    patchpath = os.path.abspath(os.path.join(root, patch))
 
     a               = patch.split('.')
     klass, testname = a[0], a[1]
@@ -35,7 +34,7 @@ def test(root, patch):
     testid          = ".%s.%s" % (klass,testname)
 
     cmd     = 'patchtest %s -t %s -s tests' % (patchpath, topdir)
-    results = check_output(cmd, stderr=STDOUT, shell=True)
+    results = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
 
     for resultline in results.splitlines():
         if testid in resultline:

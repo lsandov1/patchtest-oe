@@ -23,12 +23,12 @@ from parse_upstream_status import upstream_status
 from parse_upstream_status import upstream_status_literal_valid_status as valid_status
 from parse_upstream_status import upstream_status_mark as mark
 from pyparsing import ParseException
-from re import compile, search
+import re
 
 class PatchUpstreamStatus(Base):
 
     upstream_status_mark  = str(mark).strip('"')
-    upstream_status_regex = compile("(?<=\+)%s" % upstream_status_mark)
+    upstream_status_regex = re.compile("(?<=\+)%s" % upstream_status_mark)
 
     @classmethod
     def setUpClassLocal(cls):

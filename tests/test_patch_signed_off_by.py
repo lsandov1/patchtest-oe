@@ -20,7 +20,7 @@
 from base import Base, fix
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
-from re import compile
+import re
 from unittest import skip
 
 class PatchSignedOffBy(Base):
@@ -36,7 +36,7 @@ class PatchSignedOffBy(Base):
         cls.mark = str(signed_off_by_mark).strip('"')
 
         # match PatchSignedOffBy.mark with '+' preceding it
-        cls.prog = compile("(?<=\+)%s" % cls.mark)
+        cls.prog = re.compile("(?<=\+)%s" % cls.mark)
 
     def setUp(self):
         if self.unidiff_parse_error:

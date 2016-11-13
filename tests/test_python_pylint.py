@@ -18,7 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from base import Base, fix
-from re import sub
+import re
 from unittest import skip
 from patchtestdata import PatchTestInput as pti
 
@@ -69,8 +69,8 @@ class PyLint(Base):
             d['pylint_test'].extend(pylint_stdout.readlines())
 
         # Removing line numbers of pylint log so system focus just on introduced issues
-        pretest = [sub(':\d+:', ':', pyline) for pyline in d['pylint_pretest']]
-        test = [sub(':\d+:', ':', pyline) for pyline in d['pylint_test']]
+        pretest = [re.sub(':\d+:', ':', pyline) for pyline in d['pylint_pretest']]
+        test = [re.sub(':\d+:', ':', pyline) for pyline in d['pylint_test']]
 
         # Remove those pylint lines already present on python file
         while pretest:

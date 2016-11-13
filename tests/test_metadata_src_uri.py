@@ -1,15 +1,14 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from base import Base, fix
-from re import compile
-from subprocess import check_output
+import re
 from unittest import skip
 
 class SrcUri(Base):
 
-    metadata_regex = compile('[\+|-]\s*\S*file://([^ \t\n\r\f\v;\'\"]+)(?!.*=.*)')
-    src_regex      = compile('[\+|-]\s*SRC_URI = [\"|\'](\S+\.\w*)')
-    checksum_regex = compile('\S*\s*(SRC_URI\[\S*\] = [\"|\']\S*[\"|\'])')
+    metadata_regex = re.compile('[\+|-]\s*\S*file://([^ \t\n\r\f\v;\'\"]+)(?!.*=.*)')
+    src_regex      = re.compile('[\+|-]\s*SRC_URI = [\"|\'](\S+\.\w*)')
+    checksum_regex = re.compile('\S*\s*(SRC_URI\[\S*\] = [\"|\']\S*[\"|\'])')
 
     def setUp(self):
         if self.unidiff_parse_error:

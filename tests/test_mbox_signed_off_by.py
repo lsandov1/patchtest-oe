@@ -20,7 +20,7 @@
 from base import Base, fix
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
-from re import compile, match
+import re
 from unittest import skip
 
 class SignedOffBy(Base):
@@ -29,7 +29,7 @@ class SignedOffBy(Base):
     def setUpClassLocal(cls):
         # match self.mark with no '+' preceding it
         cls.mark = str(signed_off_by_mark).strip('"')
-        cls.prog = compile("(?<!\+)%s" % cls.mark)
+        cls.prog = re.compile("(?<!\+)%s" % cls.mark)
 
     @fix("Sign off the patch")
     def test_signed_off_by_presence(self):

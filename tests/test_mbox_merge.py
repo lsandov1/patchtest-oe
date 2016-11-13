@@ -18,12 +18,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import re
+import subprocess
 from base import Base, fix
 from patchtestdata import PatchTestInput as pti
-from subprocess import check_output
 
 def headlog():
-    output = check_output(
+    output = subprocess.check_output(
         "cd %s; git log --pretty='%%h#%%aN#%%cD:#%%s' -1" % pti.repodir,
         shell=True
         )

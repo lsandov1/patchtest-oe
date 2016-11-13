@@ -18,8 +18,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from unittest import TestCase, SkipTest
-from logging import getLogger
-from json import dumps
+import logging
+import json
 from unidiff import PatchSet, UnidiffParseError
 from patchtestdata import PatchTestInput as pti
 from mailbox import mbox
@@ -30,7 +30,7 @@ from functools import wraps
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'pyparsing'))
 
-logger=getLogger('patchtest')
+logger = logging.getLogger('patchtest')
 debug=logger.debug
 info=logger.info
 warn=logger.warn
@@ -95,7 +95,7 @@ class Base(TestCase):
     def setUpClassLocal(cls):
         pass
 
-    def fail(self, data=[]):
+    def fail(self, issue, fix=None, data=[]):
         """ Convert to a JSON string failure data"""
         value = list([(Base.testid, self.id())])
 
@@ -108,7 +108,7 @@ class Base(TestCase):
         if data:
             value.extend(data)
 
-        return super(Base, self).fail(dumps(value))
+        return super(Base, self).fail(json.dumps(value))
 
     def skip(self, data=[]):
         """ Convert the skip string to JSON"""
@@ -118,7 +118,7 @@ class Base(TestCase):
         if data:
             value.extend(data)
 
-        return super(Base, self).skipTest(dumps(value))
+        return super(Base, self).skipTest(json.dumps(value))
 
     def __str__(self):
-        return dumps(list([(Base.testid, self.id())]))
+        return json.dumps(list([(Base.testid, self.id())]))

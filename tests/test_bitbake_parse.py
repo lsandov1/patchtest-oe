@@ -18,10 +18,9 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from base import warn, Base, fix
-from patchtestdata import PatchTestInput as pti
-from subprocess import check_output, CalledProcessError, STDOUT
-from os.path import basename
-from re import compile
+import os
+import re
+import subprocess
 from unittest import skip
 from patchtestdata import PatchTestInput as pti
 
@@ -32,11 +31,11 @@ def bitbake_check_output(args):
     cmd = 'cd %s;. %s/oe-init-build-env;%s' % (pti.repodir,
                                                pti.repodir,
                                                bitbake_cmd)
-    return check_output(cmd, stderr=STDOUT, shell=True)
+    return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
 
 def formatdata(e):
     def grep(log, regex='ERROR:'):
-        prog = compile(regex)
+        prog = re.compile(regex)
         greplines = []
         if log:
             for line in log.splitlines():
@@ -70,7 +69,7 @@ class BitbakeParse(Base):
         cls.recipes.extend(cls.modifiedrecipes)
 
         # regex to extract the recipe name on a recipe filename
-        cls.reciperegex = compile("(?P<pn>^\S+)(_\S+)")
+        cls.reciperegex = re.compile("(?P<pn>^\S+)(_\S+)")
 
     def setUp(self):
         if self.unidiff_parse_error:
@@ -81,7 +80,7 @@ class BitbakeParse(Base):
             self.skipTest('Patch cannot be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-p'])
-        except CalledProcessError as e:
+        except subprocess.CalledProcessError as e:
             raise self.fail(formatdata(e))
 
     @fix("""Make sure you can (bitbake) parse manually after patching:
@@ -96,7 +95,7 @@ class BitbakeParse(Base):
             self.skipTest('Patch could not be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-p'])
-        except CalledProcessError as e:
+        except subprocess.CalledProcessError as e:
             raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment(self):
@@ -104,7 +103,7 @@ class BitbakeParse(Base):
             self.skipTest('Patch cannot be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-e'])
-        except CalledProcessError as e:
+        except subprocess.CalledProcessError as e:
             raise self.fail(formatdata(e))
 
     @fix("""Make sure you can get the (bitbake) environment manually after patching:
@@ -118,7 +117,7 @@ class BitbakeParse(Base):
             self.skipTest('Patch could not be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-e'])
-        except CalledProcessError as e:
+        except subprocess.CalledProcessError as e:
             raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment_on_target(self):
@@ -127,7 +126,7 @@ class BitbakeParse(Base):
         if not BitbakeParse.modifiedrecipes:
             self.skipTest("Patch data does not modified any bb or bbappend file")
 
-        pn_pv_list = [basename(recipe.path) for recipe in BitbakeParse.recipes]
+        pn_pv_list = [os.path.basename(recipe.path) for recipe in BitbakeParse.recipes]
         pn_list = [(pn_pv, BitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
@@ -137,7 +136,7 @@ class BitbakeParse(Base):
                 pn = match.group('pn')
                 try:
                     bitbake_check_output(['-e', pn])
-                except CalledProcessError as e:
+                except subprocess.CalledProcessError as e:
                     raise self.fail(formatdata(e))
 
     @fix("""Make sure you can get the environment manually on a specific target after patching:
@@ -150,7 +149,7 @@ class BitbakeParse(Base):
     def test_bitbake_environment_on_target(self):
         if not pti.repo.ismerged:
             self.skipTest('Patch could not be merged, no reason to execute the test method')
-        pn_pv_list = [basename(recipe.path) for recipe in BitbakeParse.recipes]
+        pn_pv_list = [os.path.basename(recipe.path) for recipe in BitbakeParse.recipes]
         pn_list = [(pn_pv, BitbakeParse.reciperegex.match(pn_pv)) for pn_pv in pn_pv_list]
 
         for pn_pv, match in pn_list:
@@ -160,6 +159,6 @@ class BitbakeParse(Base):
                 pn = match.group('pn')
                 try:
                     bitbake_check_output(['-e', pn])
-                except CalledProcessError as e:
+                except subprocess.CalledProcessError as e:
                     raise self.fail(formatdata(e))
 
