@@ -95,7 +95,7 @@ class Base(TestCase):
     def setUpClassLocal(cls):
         pass
 
-    def fail(self, issue, fix=None, data=[]):
+    def fail(self, issue, fix=None, data=None):
         """ Convert to a JSON string failure data"""
         value = list([(Base.testid, self.id())])
 
@@ -110,7 +110,7 @@ class Base(TestCase):
 
         return super(Base, self).fail(json.dumps(value))
 
-    def skip(self, data=[]):
+    def skip(self, data=None):
         """ Convert the skip string to JSON"""
         value = list([(Base.testid, self.id())])
 
