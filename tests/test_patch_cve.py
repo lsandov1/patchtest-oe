@@ -31,11 +31,11 @@ class CVE(Base):
         if self.unidiff_parse_error:
             self.skip([('Parse error', self.unidiff_parse_error)])
 
-    @fix("Include a 'CVE-xxxx-xxxx' tag in the commit shortlog")
-    def test_cve_presence_on_shortlog(self):
+    @fix("Include a 'CVE-xxxx-xxxx' tag in the commit message")
+    def test_cve_presence_in_commit_message(self):
         for i in xrange(CVE.nmessages):
             if self.re_cve_word.search(CVE.payloads[i]):
-                if not self.re_cve_pattern.search(CVE.shortlogs[i]):
+                if not self.re_cve_pattern.search(CVE.commit_message[i]):
                     self.fail([('Subject', CVE.shortlogs[i])])
 
 
