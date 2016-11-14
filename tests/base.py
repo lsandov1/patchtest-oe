@@ -23,7 +23,7 @@ import json
 from unidiff import PatchSet, UnidiffParseError
 from patchtestdata import PatchTestInput as pti
 from mailbox import mbox
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 import sys, os
 import re
 from functools import wraps
@@ -35,6 +35,8 @@ debug=logger.debug
 info=logger.info
 warn=logger.warn
 error=logger.error
+
+Commit = namedtuple('Commit', ['commit_message', 'shortlog', 'payload'])
 
 class Base(TestCase):
     # if unit test fails, fail message will throw at least the following JSON: {"id": <testid>}
@@ -71,11 +73,13 @@ class Base(TestCase):
             cls.patchset = []
             cls.unidiff_parse_error = upe.message
 
-        # Derived objects: nmessages, shortlogs, payloads and commit_messages
-        cls.nmessages       = len(cls.mbox)
-        cls.shortlogs       = [shortlog(msg['subject']) for msg in cls.mbox]
-        cls.payloads        = [msg.get_payload() for msg in cls.mbox]
-        cls.commit_messages = [commit_message(pay) for pay in cls.payloads]
+        # Easy to iterate list of commits
+        cls.commits = []
+        for msg in cls.mbox:
+            payload = msg.get_payload()
+            cls.commits.append(Commit(shortlog=shortlog(msg['subject']),
+                                      commit_message=commit_message(payload),
+                                      payload=payload))
 
         cls.setUpClassLocal()
 

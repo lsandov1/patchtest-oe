@@ -32,9 +32,8 @@ class SignedOffBy(Base):
         cls.prog = re.compile("(?<!\+)%s" % cls.mark)
 
     def test_signed_off_by_presence(self):
-        for i in xrange(SignedOffBy.nmessages):
-            payload = SignedOffBy.payloads[i]
-            if not SignedOffBy.prog.search(payload):
+        for commit in SignedOffBy.commits:
+            if not SignedOffBy.prog.search(commit.payload):
                 self.fail('Patch is missing Signed-off-by',
                           'Sign off the patch (either manually or with "git commit --amend -s")',
-                          SignedOffBy.shortlogs[i])
+                          commit.shortlog)

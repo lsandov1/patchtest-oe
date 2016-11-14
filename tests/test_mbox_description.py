@@ -22,11 +22,9 @@ from base import Base
 class CommitMessage(Base):
 
     def test_commit_message_presence(self):
-        for i in xrange(CommitMessage.nmessages):
-            commit_message = CommitMessage.commit_messages[i]
-            if not commit_message.strip():
-                shortlog = CommitMessage.shortlogs[i]
+        for commit in CommitMessage.commits:
+            if not commit.commit_message.strip():
                 self.fail('Patch is missing a descriptive commit message',
                           'Please include a commit message on your patch explaining the change (most importantly why the change is being made)',
-                          shortlog)
+                          commit.shortlog)
 

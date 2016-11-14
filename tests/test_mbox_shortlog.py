@@ -26,12 +26,13 @@ maxlength = 80
 class Shortlog(Base):
 
     def test_shortlog_presence(self):
-        for shortlog in Shortlog.shortlogs:
-            if not shortlog.strip():
+        for commit in Shortlog.commits:
+            if not commit.shortlog.strip():
                 self.fail('Patch is missing a shortlog (first line of commit message that summarises the patch)')
 
     def test_shortlog_format(self):
-        for shortlog in Shortlog.shortlogs:
+        for commit in Shortlog.commits:
+            shortlog = commit.shortlog
             if not shortlog.strip():
                 self.skipTest('Empty shortlog, no reason to execute shortlog format test')
             else:
@@ -46,8 +47,9 @@ class Shortlog(Base):
                               pe.line)
 
     def test_shortlog_length(self):
-        for shortlog in Shortlog.shortlogs:
+        for commit in Shortlog.commits:
             # no reason to re-check on revert shortlogs
+            shortlog = commit.shortlog
             if shortlog.startswith('Revert "'):
                 continue
             l = len(shortlog)

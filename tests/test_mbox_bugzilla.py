@@ -25,12 +25,11 @@ class Bugzilla(Base):
     rexp_validation = re.compile("\[\s?YOCTO\s?#\s?(\d+)\s?\]")
 
     def test_bugzilla_entry_format(self):
-        for nmessage in xrange(Bugzilla.nmessages):
-            commit_message = Bugzilla.commit_messages[nmessage]
-            for line in commit_message.splitlines():
+        for commit in Bugzilla.commits:
+            for line in commit.commit_message.splitlines():
                 if self.rexp_detect.match(line):
                     if not self.rexp_validation.match(line):
                         self.fail('Yocto Project bugzilla tag is not correctly formatted',
                                   'Specify bugzilla ID in commit description with format: "[YOCTO #<bugzilla ID>]"',
-                                  Bugzilla.shortlogs[nmessage])
+                                  commit.shortlog)
 

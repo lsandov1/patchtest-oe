@@ -60,14 +60,11 @@ class LicFilesChkSum(Base):
                           'Specify the variable LIC_FILES_CHKSUM in %s' % patch.path)
 
     def test_lic_files_chksum_modified_not_mentioned(self):
-        for i in range(LicFilesChkSum.nmessages):
-            payload = LicFilesChkSum.payloads[i]
-            if self.addmark.search(payload) and self.removemark.search(payload):
-                shortlog     = LicFilesChkSum.shortlogs[i]
-                commit_message = LicFilesChkSum.commit_messages[i]
+        for commit in LicFilesChkSum.commits:
+            if self.addmark.search(commit.payload) and self.removemark.search(commit.payload):
                 # now lets search in the commit message (summary and commit_message)
-                if (not self.licensemarks.search(shortlog)) and \
-                   (not self.licensemarks.search(commit_message)):
+                if (not self.licensemarks.search(commit.shortlog)) and \
+                   (not self.licensemarks.search(commit.commit_message)):
                     self.fail('LIC_FILES_CHKSUM changed but there was no explanation as to why in the commit message',
                               'Provide a reason for LIC_FILES_CHKSUM change in commit message',
-                              shortlog)
+                              commit.shortlog)
