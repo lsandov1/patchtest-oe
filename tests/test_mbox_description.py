@@ -26,5 +26,5 @@ class CommitMessage(Base):
             if not commit.commit_message.strip():
                 self.fail('Patch is missing a descriptive commit message',
                           'Please include a commit message on your patch explaining the change (most importantly why the change is being made)',
-                          commit.shortlog)
+                          commit)
 

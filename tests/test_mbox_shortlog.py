@@ -28,7 +28,9 @@ class Shortlog(Base):
     def test_shortlog_presence(self):
         for commit in Shortlog.commits:
             if not commit.shortlog.strip():
-                self.fail('Patch is missing a shortlog (first line of commit message that summarises the patch)')
+                self.fail('Patch is missing a shortlog (first line of commit message that summarises the patch)',
+                          'Add a shortlog (and commit message)',
+                          commit)
 
     def test_shortlog_format(self):
         for commit in Shortlog.commits:
@@ -44,7 +46,7 @@ class Shortlog(Base):
                 except ParseException as pe:
                     self.fail('Shortlog does not follow expected format',
                               'Commit shortlog (first line of commit message) should follow the format "<target>: <summary>"',
-                              pe.line)
+                              commit)
 
     def test_shortlog_length(self):
         for commit in Shortlog.commits:
@@ -56,4 +58,4 @@ class Shortlog(Base):
             if l > maxlength:
                 self.fail('Commit shortlog is too long',
                           'Edit shortlog so that it is %d characters or less (currently %d characters)' % (maxlength, l),
-                          shortlog)
+                          commit)

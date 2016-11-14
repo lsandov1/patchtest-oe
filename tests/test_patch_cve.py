@@ -37,7 +37,7 @@ class CVE(Base):
                 if not self.re_cve_pattern.search(commit.commit_message):
                     self.fail('Missing or incorrectly formatted CVE tag in commit message',
                               'Include a "CVE-xxxx-xxxx" tag in the commit message',
-                              commit.shortlog)
+                              commit)
 
     def test_cve_tag_format(self):
         # there are cases where an upgrade is done in order
@@ -60,4 +60,4 @@ class CVE(Base):
                 if not self.re_cve_tag.search(commit.payload):
                     self.fail('Missing or incorrectly formatted CVE tag in included patch file',
                               'Correct or include the CVE tag on cve patch with format: "CVE: CVE-YYYY-XXXX"',
-                              commit.shortlog)
+                              commit)

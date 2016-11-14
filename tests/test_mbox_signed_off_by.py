@@ -36,4 +36,4 @@ class SignedOffBy(Base):
             if not SignedOffBy.prog.search(commit.payload):
                 self.fail('Patch is missing Signed-off-by',
                           'Sign off the patch (either manually or with "git commit --amend -s")',
-                          commit.shortlog)
+                          commit)

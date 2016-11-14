@@ -97,7 +97,8 @@ class Base(TestCase):
         if fix:
             value['fix'] = fix
         if commit:
-            value['commit'] = commit
+            value['commit'] = {'subject': commit.subject,
+                               'shortlog': commit.shortlog}
 
         # extend return value with other useful info
         if data:

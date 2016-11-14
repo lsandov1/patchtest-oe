@@ -31,5 +31,5 @@ class Bugzilla(Base):
                     if not self.rexp_validation.match(line):
                         self.fail('Yocto Project bugzilla tag is not correctly formatted',
                                   'Specify bugzilla ID in commit description with format: "[YOCTO #<bugzilla ID>]"',
-                                  commit.shortlog)
+                                  commit)
 
