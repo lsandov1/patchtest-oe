@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 import re
@@ -31,9 +31,10 @@ class SignedOffBy(Base):
         cls.mark = str(signed_off_by_mark).strip('"')
         cls.prog = re.compile("(?<!\+)%s" % cls.mark)
 
-    @fix("Sign off the patch")
     def test_signed_off_by_presence(self):
         for i in xrange(SignedOffBy.nmessages):
             payload = SignedOffBy.payloads[i]
             if not SignedOffBy.prog.search(payload):
-                self.fail([('Commit shortlog', SignedOffBy.shortlogs[i])])
+                self.fail('Patch is missing Signed-off-by',
+                          'Sign off the patch (either manually or with "git commit --amend -s")',
+                          SignedOffBy.shortlogs[i])

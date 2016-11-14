@@ -36,20 +36,8 @@ info=logger.info
 warn=logger.warn
 error=logger.error
 
-def fix(msg):
-    def dec(f):
-        @wraps(f)
-        def wrapper(*args, **kwds):
-            return f(*args, **kwds)
-        wrapper.__name__ = f.__name__
-        wrapper.fix = msg
-        return wrapper
-    return dec
-
 class Base(TestCase):
-    # if unit test fails, fail message will throw at least the following JSON: [('ID', testid)]
-    testid = 'Test ID'
-    fix    = 'Proposed Fix'
+    # if unit test fails, fail message will throw at least the following JSON: {"id": <testid>}
 
     endcommit_messages_regex = re.compile('\(From \w+-\w+ rev:|(?<!\S)Signed-off-by|(?<!\S)---\n')
     patchmetadata_regex   = re.compile('-{3} \S+|\+{3} \S+|@{2} -\d+,\d+ \+\d+,\d+ @{2} \S+')
@@ -95,30 +83,31 @@ class Base(TestCase):
     def setUpClassLocal(cls):
         pass
 
-    def fail(self, issue, fix=None, data=None):
+    def fail(self, issue, fix=None, commit=None, data=None):
         """ Convert to a JSON string failure data"""
-        value = list([(Base.testid, self.id())])
+        value = {'id': self.id(),
+                 'issue': issue}
 
-        # extend return value with possible fix info
-        test = getattr(self, self._testMethodName)
-        if hasattr(test, 'fix'):
-            value.extend([(Base.fix, test.fix)])
+        if fix:
+            value['fix'] = fix
+        if commit:
+            value['commit'] = commit
 
         # extend return value with other useful info
         if data:
-            value.extend(data)
+            value['data'] = data
 
         return super(Base, self).fail(json.dumps(value))
 
     def skip(self, data=None):
         """ Convert the skip string to JSON"""
-        value = list([(Base.testid, self.id())])
+        value = {'id': self.id()}
 
         # extend return value with other useful info
         if data:
-            value.extend(data)
+            value['data'] = data
 
         return super(Base, self).skipTest(json.dumps(value))
 
     def __str__(self):
-        return json.dumps(list([(Base.testid, self.id())]))
+        return json.dumps({'id': self.id()})

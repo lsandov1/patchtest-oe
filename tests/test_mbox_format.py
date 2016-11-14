@@ -17,11 +17,11 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 
 class MboxFormat(Base):
 
-    @fix("Create again the series using git-format-patch")
     def test_mbox_format(self):
         if self.unidiff_parse_error:
-            self.fail([('Parse error', self.unidiff_parse_error)])
+            self.fail('Parse error: %s' % self.unidiff_parse_error,
+                      'Create the series again using git-format-patch')

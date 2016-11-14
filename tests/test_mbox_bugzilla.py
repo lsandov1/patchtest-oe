@@ -18,19 +18,19 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import re
-from base import Base, fix
+from base import Base
 
 class Bugzilla(Base):
     rexp_detect     = re.compile("\[.*YOCTO.*\]", re.IGNORECASE)
     rexp_validation = re.compile("\[\s?YOCTO\s?#\s?(\d+)\s?\]")
 
-    @fix("Provide a bugzilla tag in commit description with format: '[YOCTO #<bugzilla ID>]'")
     def test_bugzilla_entry_format(self):
         for nmessage in xrange(Bugzilla.nmessages):
             commit_message = Bugzilla.commit_messages[nmessage]
             for line in commit_message.splitlines():
                 if self.rexp_detect.match(line):
                     if not self.rexp_validation.match(line):
-                        self.fail([('Entry', line),
-                                   ('Commit shortlog', Bugzilla.shortlogs[nmessage])])
+                        self.fail('Yocto Project bugzilla tag is not correctly formatted',
+                                  'Specify bugzilla ID in commit description with format: "[YOCTO #<bugzilla ID>]"',
+                                  Bugzilla.shortlogs[nmessage])
 

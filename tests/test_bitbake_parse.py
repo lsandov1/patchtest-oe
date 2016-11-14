@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import warn, Base, fix
+from base import warn, Base
 import os
 import re
 import subprocess
@@ -81,22 +81,23 @@ class BitbakeParse(Base):
         try:
             bitbake_check_output(['-p'])
         except subprocess.CalledProcessError as e:
-            raise self.fail(formatdata(e))
+            self.fail('Parsing resulted in the following error:\n%s' % formatdata(e))
 
-    @fix("""Make sure you can (bitbake) parse manually after patching:
+    def test_bitbake_parse(self):
+        if not pti.repo.ismerged:
+            self.skipTest('Patch could not be merged, no reason to execute the test method')
+        try:
+            bitbake_check_output(['-p'])
+            raise self.fail(formatdata(e))
+        except subprocess.CalledProcessError as e:
+            self.fail('Parsing resulted in the following error:\n%s' % formatdata(e),
+                      """Make sure you can (bitbake) parse manually after patching:
 
     $ cd <your poky repo>
     $ git am <your patch>
     $ source oe-init-build-env
     $ bitbake -p
     """)
-    def test_bitbake_parse(self):
-        if not pti.repo.ismerged:
-            self.skipTest('Patch could not be merged, no reason to execute the test method')
-        try:
-            bitbake_check_output(['-p'])
-        except subprocess.CalledProcessError as e:
-            raise self.fail(formatdata(e))
 
     def pretest_bitbake_environment(self):
         if not pti.repo.canbemerged:
@@ -104,21 +105,21 @@ class BitbakeParse(Base):
         try:
             bitbake_check_output(['-e'])
         except subprocess.CalledProcessError as e:
-            raise self.fail(formatdata(e))
+            self.fail(formatdata(e))
 
-    @fix("""Make sure you can get the (bitbake) environment manually after patching:
-
-    $ cd <your poky repo>
-    $ git am <your patch>
-    $ source oe-init-build-env
-    $ bitbake -e""")
     def test_bitbake_environment(self):
         if not pti.repo.ismerged:
             self.skipTest('Patch could not be merged, no reason to execute the test method')
         try:
             bitbake_check_output(['-e'])
         except subprocess.CalledProcessError as e:
-            raise self.fail(formatdata(e))
+            self.fail('Running bitbake -e resulted in the following error:\n%s' % formatdata(e),
+                      """Make sure you can get the (bitbake) environment manually after patching:
+
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -e""")
 
     def pretest_bitbake_environment_on_target(self):
         if not pti.repo.canbemerged:
@@ -137,15 +138,8 @@ class BitbakeParse(Base):
                 try:
                     bitbake_check_output(['-e', pn])
                 except subprocess.CalledProcessError as e:
-                    raise self.fail(formatdata(e))
+                    self.fail(formatdata(e))
 
-    @fix("""Make sure you can get the environment manually on a specific target after patching:
-
-    $ cd <your poky repo>
-    $ git am <your patch>
-    $ source oe-init-build-env
-    $ bitbake -e <target>
-    """)
     def test_bitbake_environment_on_target(self):
         if not pti.repo.ismerged:
             self.skipTest('Patch could not be merged, no reason to execute the test method')
@@ -160,5 +154,11 @@ class BitbakeParse(Base):
                 try:
                     bitbake_check_output(['-e', pn])
                 except subprocess.CalledProcessError as e:
-                    raise self.fail(formatdata(e))
+                    self.fail(formatdata(e), """Make sure you can get the environment manually on a specific target after patching:
+
+    $ cd <your poky repo>
+    $ git am <your patch>
+    $ source oe-init-build-env
+    $ bitbake -e <target>
+    """)
 

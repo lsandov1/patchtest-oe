@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 from parse_signed_off_by import signed_off_by, signed_off_by_mark
 from pyparsing import ParseException
 import re
@@ -42,7 +42,6 @@ class PatchSignedOffBy(Base):
         if self.unidiff_parse_error:
             self.skip([('Parse error', self.unidiff_parse_error)])
 
-    @fix("Sign off the added patch")
     def test_signed_off_by_presence(self):
         if not PatchSignedOffBy.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % PatchSignedOffBy.mark)
@@ -55,4 +54,5 @@ class PatchSignedOffBy(Base):
                 if PatchSignedOffBy.prog.search(payload):
                     break
             else:
-                self.fail([('Patch', newpatch.path)])
+                self.fail('A patch file has been added, but does not have a Signed-off-by tag',
+                          'Sign off the added patch file (%s)' % newpatch.path)

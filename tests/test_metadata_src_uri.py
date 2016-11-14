@@ -1,6 +1,6 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from base import Base, fix
+from base import Base
 import re
 from unittest import skip
 
@@ -15,7 +15,6 @@ class SrcUri(Base):
             self.skip([('Parse error', self.unidiff_parse_error)])
 
     @skip("Currently blocked by YOCTO #9874")
-    @fix("Amend the patch containing the software patch file removal")
     def test_src_uri_left_files(self):
         # get the removed files indicated on diff data
         removed_diff_files = set()
@@ -43,10 +42,10 @@ class SrcUri(Base):
         # but not from tree (contained in the diff set)
         notremoved = removed_metadata_files - removed_diff_files
         if notremoved:
-            self.fail([('Files not removed from tree', '\n'.join(notremoved))])
+            self.fail('Files not removed from tree', '\n'.join(notremoved),
+                      'Amend the patch containing the software patch file removal')
 
     @skip("Currently blocked by YOCTO #10059")
-    @fix("SRC_SRI so checksums must change")
     def test_src_uri_checksums_not_changed(self):
         checksums_new = set()
         checksums_old = set()
@@ -79,6 +78,6 @@ class SrcUri(Base):
         if src_exists and srcuri_new:
             if srcuri_old != srcuri_new:
                 if not checksums_exist:
-                    self.fail()
+                    self.fail('SRC_URI changed so checksums must change')
                 elif checksums_old.intersection(checksums_new):
-                    self.fail()
+                    self.fail('SRC_URI changed so checksums must change')

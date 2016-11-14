@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 import os
 import re
 
@@ -31,15 +31,14 @@ class CVE(Base):
         if self.unidiff_parse_error:
             self.skip([('Parse error', self.unidiff_parse_error)])
 
-    @fix("Include a 'CVE-xxxx-xxxx' tag in the commit message")
     def test_cve_presence_in_commit_message(self):
         for i in xrange(CVE.nmessages):
             if self.re_cve_word.search(CVE.payloads[i]):
                 if not self.re_cve_pattern.search(CVE.commit_message[i]):
-                    self.fail([('Subject', CVE.shortlogs[i])])
+                    self.fail('Missing or incorrectly formatted CVE tag in commit message',
+                              'Include a "CVE-xxxx-xxxx" tag in the commit message',
+                              CVE.shortlogs[i])
 
-
-    @fix("Correct or include the CVE tag on cve patch with format:'CVE: CVE-YYYY-XXXX'")
     def test_cve_tag_format(self):
         # there are cases where an upgrade is done in order
         # to include a cve (or several) and it is mentioned
@@ -49,7 +48,7 @@ class CVE(Base):
             if self.re_cve_pattern.search(' '.join(CVE.shortlogs)):
                 recipes = [os.path.basename(p.path).split('_')[0] for p in CVE.patchset]
                 if recipes[0] == recipes[1]:
-                    self.skipTest('No check is done on software upgrades')
+                    self.skipTest('No check is done on recipe upgrades')
 
         # Skip check on metadata classes
         if len(CVE.patchset) == 1:
@@ -59,4 +58,6 @@ class CVE(Base):
         for i in xrange(CVE.nmessages):
             if self.re_cve_pattern.search(CVE.shortlogs[i]):
                 if not self.re_cve_tag.search(CVE.payloads[i]):
-                    self.fail([('Subject', CVE.shortlogs[i])])
+                    self.fail('Missing or incorrectly formatted CVE tag in included patch file',
+                              'Correct or include the CVE tag on cve patch with format: "CVE: CVE-YYYY-XXXX"',
+                              CVE.shortlogs[i])

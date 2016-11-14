@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 from unittest import skip
 from parse_shortlog import shortlog
 import re
@@ -44,7 +44,6 @@ class LicFilesChkSum(Base):
         if self.unidiff_parse_error:
             self.skip([('Parse error', self.unidiff_parse_error)])
 
-    @fix("Specify the variable LIC_FILES_CHKSUM on your new recipe")
     def test_lic_files_chksum_presence(self):
         for patch in self.newpatchrecipes:
             payload = patch.__str__()
@@ -57,9 +56,9 @@ class LicFilesChkSum(Base):
                 if self.addmark.search(line):
                     break
             else:
-                self.fail([('Path recipe', patch.path)])
+                self.fail('LIC_FILES_CHKSUM is missing in newly added recipe',
+                          'Specify the variable LIC_FILES_CHKSUM in %s' % patch.path)
 
-    @fix("Provide a reason for the checksum change on shortlog")
     def test_lic_files_chksum_modified_not_mentioned(self):
         for i in range(LicFilesChkSum.nmessages):
             payload = LicFilesChkSum.payloads[i]
@@ -69,4 +68,6 @@ class LicFilesChkSum(Base):
                 # now lets search in the commit message (summary and commit_message)
                 if (not self.licensemarks.search(shortlog)) and \
                    (not self.licensemarks.search(commit_message)):
-                    self.fail([('Commit shortlog', shortlog)])
+                    self.fail('LIC_FILES_CHKSUM changed but there was no explanation as to why in the commit message',
+                              'Provide a reason for LIC_FILES_CHKSUM change in commit message',
+                              shortlog)

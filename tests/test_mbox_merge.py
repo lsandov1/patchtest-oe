@@ -19,7 +19,7 @@
 
 import re
 import subprocess
-from base import Base, fix
+from base import Base
 from patchtestdata import PatchTestInput as pti
 
 def headlog():
@@ -31,10 +31,9 @@ def headlog():
 
 class Merge(Base):
 
-    @fix("Rebase your series on top of targeted branch")
     def test_series_merge_on_head(self):
         if not pti.repo.ismerged:
             commithash, author, date, shortlog = headlog()
-            self.fail([
-                ('Targeted branch', pti.repo.branch),
-                ('HEAD commit', commithash)])
+            self.fail('Series does not apply on top of target branch',
+                      'Rebase your series on top of targeted branch',
+                      data=[('Targeted branch', '%s (currently at %s)' % (pti.repo.branch, commithash))])

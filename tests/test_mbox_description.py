@@ -17,15 +17,16 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 
 class CommitMessage(Base):
 
-    @fix("Please include a commit message on your patch")
     def test_commit_message_presence(self):
         for i in xrange(CommitMessage.nmessages):
             commit_message = CommitMessage.commit_messages[i]
             if not commit_message.strip():
                 shortlog = CommitMessage.shortlogs[i]
-                self.fail([('Commit shortlog', shortlog)])
+                self.fail('Patch is missing a descriptive commit message',
+                          'Please include a commit message on your patch explaining the change (most importantly why the change is being made)',
+                          shortlog)
 

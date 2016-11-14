@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 import parse_shortlog
 from pyparsing import ParseException
 
@@ -25,13 +25,11 @@ maxlength = 80
 
 class Shortlog(Base):
 
-    @fix("Provide a commit shortlog in your series' patch")
     def test_shortlog_presence(self):
         for shortlog in Shortlog.shortlogs:
             if not shortlog.strip():
-                self.fail()
+                self.fail('Patch is missing a shortlog (first line of commit message that summarises the patch)')
 
-    @fix("Commit shortlog must follow the format '<target>: <summary>'")
     def test_shortlog_format(self):
         for shortlog in Shortlog.shortlogs:
             if not shortlog.strip():
@@ -43,10 +41,10 @@ class Shortlog(Base):
                 try:
                     parse_shortlog.shortlog.parseString(shortlog)
                 except ParseException as pe:
-                    self.fail([('Commit shortlog', pe.line),
-                               ('Column',  pe.col)])
+                    self.fail('Shortlog does not follow expected format',
+                              'Commit shortlog (first line of commit message) should follow the format "<target>: <summary>"',
+                              pe.line)
 
-    @fix("Provide a commit shortlog no longer that %s characters" % maxlength)
     def test_shortlog_length(self):
         for shortlog in Shortlog.shortlogs:
             # no reason to re-check on revert shortlogs
@@ -54,5 +52,6 @@ class Shortlog(Base):
                 continue
             l = len(shortlog)
             if l > maxlength:
-                self.fail([('Commit shortlog', shortlog),
-                           ('Current length', l)])
+                self.fail('Commit shortlog is too long',
+                          'Edit shortlog so that it is %d characters or less (currently %d characters)' % (maxlength, l),
+                          shortlog)

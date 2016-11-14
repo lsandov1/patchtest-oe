@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 import re
 from unittest import skip
 from patchtestdata import PatchTestInput as pti
@@ -56,7 +56,6 @@ class PyLint(Base):
                 (pylint_stdout, pylint_stderr) = lint.py_run(pythonpatch.path, return_std=True)
                 d['pylint_pretest'].extend(pylint_stdout.readlines())
 
-    @fix("Check your modified python lines with pylint, specially those lines introduced by your patch")
     def test_pylint(self):
         if not pti.repo.ismerged:
             self.skipTest('Patch could not be merged, no reason to execute the test method')
@@ -80,5 +79,5 @@ class PyLint(Base):
         if test:
             #TODO: 1. Include the line number on test items
             #      2. Better test format
-            self.fail([('Pylint lines', ''.join(test))])
-
+            self.fail('Pylint lines:\n %s' % ''.join(test),
+                      'Check your modified python lines with pylint, specially those lines introduced by your patch')

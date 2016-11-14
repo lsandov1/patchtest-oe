@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base, fix
+from base import Base
 
 from parse_upstream_status import upstream_status
 from parse_upstream_status import upstream_status_literal_valid_status as valid_status
@@ -42,7 +42,6 @@ class PatchUpstreamStatus(Base):
         if self.unidiff_parse_error:
             self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
 
-    @fix("Include Upstream-Status on the package patch")
     def test_upstream_status_presence(self):
         if not PatchUpstreamStatus.newpatches:
             self.skipTest("There are no new software patches, no reason to test %s presence" % self.upstream_status_mark)
@@ -55,11 +54,9 @@ class PatchUpstreamStatus(Base):
                 if self.upstream_status_regex.search(payload):
                     break
             else:
-                self.fail([
-                    ('Possible Status', ', '.join(valid_status)),
-                    ('Patch path', newpatch.path)])
+                self.fail('Added patch is missing Upstream-Status in the header'
+                          'Add Upstream-Status: <status> to the %s patch header (possible values: %s)' % (newpatch.path, ', '.join(valid_status)))
 
-    @fix("Fix Upstream-Status format")
     def test_upstream_status_format(self):
         for newpatch in PatchUpstreamStatus.newpatches:
             payload = newpatch.__str__()
@@ -72,7 +69,5 @@ class PatchUpstreamStatus(Base):
                     try:
                         upstream_status.parseString(line.lstrip('+'))
                     except ParseException as pe:
-                        self.fail([
-                            ('Required format', 'Upstream-Status: <status>'),
-                            ('Possible Status', ', '.join(valid_status)),
-                            ('Line', pe.line), ('Column', pe.col)])
+                        self.fail('Upstream-Status is in incorrect format',
+                                  'Fix Upstream-Status format in %s so it is one of: %s' % (newpatch.path, ', '.join(valid_status)))
