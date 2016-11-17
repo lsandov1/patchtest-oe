@@ -21,7 +21,7 @@ from base import Base
 import parse_shortlog
 from pyparsing import ParseException
 
-maxlength = 80
+maxlength = 90
 
 class Shortlog(Base):
 
