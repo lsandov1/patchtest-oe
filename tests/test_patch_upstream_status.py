@@ -54,8 +54,8 @@ class PatchUpstreamStatus(Base):
                 if self.upstream_status_regex.search(payload):
                     break
             else:
-                self.fail('Added patch is missing Upstream-Status in the header'
-                          'Add Upstream-Status: <status> to the %s patch header (possible values: %s)' % (newpatch.path, ', '.join(valid_status)))
+                self.fail('Added patch file is missing Upstream-Status in the header',
+                          'Add Upstream-Status: <status> to the header of %s (possible values: %s)' % (newpatch.path, ', '.join(valid_status)))
 
     def test_upstream_status_format(self):
         for newpatch in PatchUpstreamStatus.newpatches:
