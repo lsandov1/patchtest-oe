@@ -22,7 +22,7 @@ from base import Base
 
 class Bugzilla(Base):
     rexp_detect     = re.compile("\[.*YOCTO.*\]", re.IGNORECASE)
-    rexp_validation = re.compile("\[(\s?YOCTO\s?#\s?(\d+)\s?,?)+\]")
+    rexp_validation = re.compile("\[(\s?YOCTO\s?#\s?(\d+)\s?,?)+\]", re.IGNORECASE)
 
     def test_bugzilla_entry_format(self):
         for commit in Bugzilla.commits:
