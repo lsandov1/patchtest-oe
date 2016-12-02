@@ -1,83 +1,123 @@
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-from base import Base
+#!/usr/bin/env python
+
+# Checks related to the patch's SRC_URI metadata variable
+#
+# Copyright (C) 2016 Intel Corporation
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import bitbake
 import re
-from unittest import skip
+import patchtestdata
+import subprocess
 
-class SrcUri(Base):
+class SrcUri(bitbake.Bitbake):
 
-    metadata_regex = re.compile('[\+|-]\s*\S*file://([^ \t\n\r\f\v;\'\"]+)(?!.*=.*)')
-    src_regex      = re.compile('[\+|-]\s*SRC_URI = [\"|\'](\S+\.\w*)')
-    checksum_regex = re.compile('\S*\s*(SRC_URI\[\S*\] = [\"|\']\S*[\"|\'])')
+    metadata  = 'SRC_URI'
+    md5sum    = 'md5sum'
+    sha256sum = 'sha256sum'
 
     def setUp(self):
         if self.unidiff_parse_error:
-            self.skip([('Parse error', self.unidiff_parse_error)])
+            self.skipTest([('Parse error', self.unidiff_parse_error)])
 
-    @skip("Currently blocked by YOCTO #9874")
+    def pretest_src_uri_left_files(self):
+        if not self.modified_pnpvs:
+            self.skipTest('No modified recipes, skipping pretest')
+
+        # get the proper metadata values
+        for pn,pv in self.modified_pnpvs:
+            try:
+                patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), self.metadata, pn)] = bitbake.getVar(self.metadata, pn)
+            except subprocess.CalledProcessError:
+                self.skipTest('Target %s cannot be parse by bitbake' % pn)
+
     def test_src_uri_left_files(self):
-        # get the removed files indicated on diff data
-        removed_diff_files = set()
-        for removed_file in SrcUri.patchset.removed_files:
-            removed_diff_files.add(os.path.basename(removed_file.path))
+        if not self.modified_pnpvs:
+            self.skip('No modified recipes, skipping pretest')
 
-        # get the removed files indicated on the bitbake metadata
-        removed_metadata_files = set()
-        for patch in SrcUri.patchset:
-            payload = patch.__str__()
-            for line in payload.splitlines():
-                if self.patchmetadata_regex.match(line):
-                    continue
-                match = self.metadata_regex.search(line)
-                if match:
-                    fn = os.path.basename(match.group(1))
-                    if line.startswith('-'):
-                        removed_metadata_files.add(fn)
-                    if line.startswith('+'):
-                        if fn in removed_metadata_files:
-                            removed_metadata_files.remove(fn)
+        # get the proper metadata values
+        for pn,pv in self.modified_pnpvs:
+            try:
+                patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), self.metadata, pn)] = bitbake.getVar(self.metadata, pn)
+            except subprocess.CalledProcessError:
+                self.skipTest('Target %s cannot be parse by bitbake' % pn)
+            
+        for pn,_ in self.modified_pnpvs:
+            pretest_src_uri = patchtestdata.PatchTestDataStore['pre%s-%s-%s' % (self.shortid(), self.metadata, pn)].split()
+            test_src_uri    = patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), self.metadata, pn)].split()
 
-        # every member of metadata must be a member of diff set, otherwise
-        # there are files removed from SRC_URI (contained in metadata set)
-        # but not from tree (contained in the diff set)
-        notremoved = removed_metadata_files - removed_diff_files
-        if notremoved:
-            self.fail('Files not removed from tree', '\n'.join(notremoved),
-                      'Amend the patch containing the software patch file removal')
+            pretest_files = set([patch for patch in pretest_src_uri if patch.startswith('file://')])
+            test_files    = set([patch for patch in test_src_uri    if patch.startswith('file://')])
 
-    @skip("Currently blocked by YOCTO #10059")
+            # check if files were removed
+            if len(test_files) < len(pretest_files):
+
+                # get removals from patchset
+                filesremoved_from_patchset = set()
+                for patch in self.patchset:
+                    if patch.is_removed_file:
+                        filesremoved_from_patchset.add(patch)
+
+                # get the deleted files from the SRC_URI
+                filesremoved_from_usr_uri = pretest_files - test_files
+
+                if len(filesremoved_from_usr_uri) != len(filesremoved_from_patchset):
+                    self.fail('Files not removed from tree',
+                              'Amend the patch containing the software patch file removal',
+                              data=[('File', f) for f in filesremoved_from_usr_uri])
+
+    def pretest_src_uri_checksums_not_changed(self):
+        # get the proper metadata values
+        for pn,_ in self.modified_pnpvs:
+            try:
+                patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), self.metadata, pn)]  = bitbake.getVar(self.metadata, pn)
+                for flag in [self.md5sum, self.sha256sum]:
+                    patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), flag, pn)]  = bitbake.getFlag(flag, pn)
+            except subprocess.CalledProcessError:
+                self.skipTest('Target %s cannot be parse by bitbake' % pn)
+        
     def test_src_uri_checksums_not_changed(self):
-        checksums_new = set()
-        checksums_old = set()
-        checksums_exist = 0
-        src_exists = 0
-        srcuri_new = 0
-        srcuri_old = 0
-        for patch in SrcUri.patchset:
-            payload = patch.__str__()
-            for line in payload.splitlines():
-                if self.patchmetadata_regex.match(line):
-                    continue
-                src_uri_match  = self.src_regex.search(line)
-                checksum_match = self.checksum_regex.search(line)
-                if src_uri_match:
-                    if line.startswith('-'):
-                        srcuri_old = src_uri_match.group(1)
-                        src_exists = 1
-                    if line.startswith('+'):
-                        srcuri_new = src_uri_match.group(1)
-                if checksum_match:
-                    checksum = checksum_match.group(1)
-                    if line.startswith('+'):
-                        checksums_new.add(checksum)
-                    else:
-                        checksums_old.add(checksum)
-                    checksums_exist = 0
-                    if len(checksums_new) == len(checksums_old):
-                        checksums_exist = 1
-        if src_exists and srcuri_new:
-            if srcuri_old != srcuri_new:
-                if not checksums_exist:
-                    self.fail('SRC_URI changed so checksums must change')
-                elif checksums_old.intersection(checksums_new):
-                    self.fail('SRC_URI changed so checksums must change')
+        # get the proper metadata values
+        for pn,_ in self.modified_pnpvs:
+            try:
+                patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), self.metadata, pn)]  = bitbake.getVar(self.metadata, pn)
+                for flag in [self.md5sum, self.sha256sum]:
+                    patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), flag, pn)]  = bitbake.getFlag(flag, pn)
+            except subprocess.CalledProcessError:
+                self.skipTest('Target %s cannot be parse by bitbake' % pn)
+
+        # loop on every src_uri and check if checksums change
+        for pn,_ in self.modified_pnpvs:
+            pretest_src_uri = patchtestdata.PatchTestDataStore['pre%s-%s-%s' % (self.shortid(), self.metadata, pn)].split()
+            test_src_uri    = patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(), self.metadata, pn)].split()
+
+            pretest_uri = [uri for uri in pretest_src_uri if 'file:' not in uri]
+            test_uri    = [uri for uri in test_src_uri if 'file:' not in uri]
+
+            if not pretest_uri:
+                base.logger.warn('No SRC_URI found on %s' % pn)
+            if not test_uri:
+                base.logger.warn('No SRC_URI found on %s' % pn)
+            
+            if pretest_uri != test_uri:
+                # chksums must reflect the change
+                for sum in [self.md5sum, self.sha256sum]:
+                    pretest_sum = patchtestdata.PatchTestDataStore['pre%s-%s-%s' % (self.shortid(), sum, pn)]
+                    test_sum    = patchtestdata.PatchTestDataStore['%s-%s-%s'    % (self.shortid(), sum, pn)]
+                    if pretest_sum != test_sum:
+                        break
+                else:
+                    self.fail('SRC_URI changed but checksums are the same',
+                              'Include the SRC_URI\'s checksums changes into your patch')

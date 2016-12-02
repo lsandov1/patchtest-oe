@@ -116,5 +116,8 @@ class Base(TestCase):
 
         return super(Base, self).skipTest(json.dumps(value))
 
+    def shortid(self):
+        return self.id().split('.')[-1]
+
     def __str__(self):
         return json.dumps({'id': self.id()})

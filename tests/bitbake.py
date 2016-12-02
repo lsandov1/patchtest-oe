@@ -17,24 +17,29 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import base
+import os
 import re
+import base
 import subprocess
 from patchtestdata import PatchTestInput as pti
+import unittest
 
 def bitbake(args):
 
-    bitbake_cmd = 'bitbake %s' % ' '.join(args)
+    # Check if environment is prepared
+    cmd = 'cd %s;. %s/oe-init-build-env' % (pti.repodir,
+                                            pti.repodir)
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
 
-    # change dir, prepare system and exec bitbake
+    # Run bitbake
+    bitbake_cmd = 'bitbake %s' % ' '.join(args)
     cmd = 'cd %s;. %s/oe-init-build-env;%s' % (pti.repodir,
                                                pti.repodir,
                                                bitbake_cmd)
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
 
-def filter(log, regex):
+def filter(log, prog):
     """ Filter those lines defined by the regex """
-    prog = re.compile(regex)
     greplines = []
     if log:
         for line in log.splitlines():
@@ -42,41 +47,60 @@ def filter(log, regex):
                 greplines.append(line)
     if not greplines:
         # something went really wrong, so provide the complete log
-        base.logger.warn(log)
+        base.logger.warn('Pattern %s not found on bitbake output' % prog.pattern)
 
     return greplines
 
 def getVar(var, target=''):
-    plain = ' '.join(filter(bitbake(['-e', target]), '^%s=' % var))
+    plain = ' '.join(filter(bitbake(['-e', target]), re.compile('^%s=' % var)))
     return plain.lstrip('%s=' % var).strip('"')
 
-def formaterror(e, regex='^ERROR:'):
-    lines = filter(e.output, regex)
-    out = [('Output', lines[0])]
-    out.extend([('', line) for line in lines[1:]])
+def getFlag(flag, target=''):
+    prog  = prog = re.compile('#\s+\[(?P<flag>%s)\]\s+\"(?P<value>\w+)\"' % flag)
+    plain = ' '.join(filter(bitbake(['-e', target]), prog))
+    flag = ''
+    match = prog.search(plain)
+    if match:
+        flag = match.group('value')
+    return flag
+
+def formaterror(e, prog=re.compile('ERROR:', re.IGNORECASE)):
+    out = ''
+    lines = filter(e.output, prog)
+    if len(lines):
+        out = [('Output', lines[0])]
+        out.extend([('', line) for line in lines[1:]])
     return out
 
 class Bitbake(base.Base):
 
     # Matches PN and PV from a recipe filename
-    pnpv = re.compile("(?P<pn>^\S+)_(?P<pv>\S+)\.\S+")
+    pnpv = re.compile("(?P<pn>^\S+)(_(?P<pv>\S+))?\.\S+")
+
+    added_pnpvs    = []
+    modified_pnpvs = []
+    removed_pnpvs  = []
 
     @classmethod
     def setUpClassLocal(cls):
-        cls.newrecipes = []
-        cls.modifiedrecipes = []
-        cls.recipes = []
-        # get just those patches touching python files
+        added_paths    = []
+        modified_paths = []
+        removed_paths  = []
+
         for patch in cls.patchset:
-            if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
+            if patch.path.endswith('.bb') or patch.path.endswith('.append') or patch.path.endswith('.inc'):
                 if patch.is_added_file:
-                    cls.newrecipes.append(patch)
+                    added_paths.append(patch.path)
                 elif patch.is_modified_file:
-                    cls.modifiedrecipes.append(patch)
+                    modified_paths.append(patch.path)
+                elif patch.is_removed_file:
+                    removed_paths.append(patch.path)
 
-        cls.recipes.extend(cls.newrecipes)
-        cls.recipes.extend(cls.modifiedrecipes)
+        added_matches    = [cls.pnpv.match(os.path.basename(path)) for path in added_paths]
+        modified_matches = [cls.pnpv.match(os.path.basename(path)) for path in modified_paths]
+        removed_matches  = [cls.pnpv.match(os.path.basename(path)) for path in removed_paths]
 
-    def setUp(self):
-        if self.unidiff_parse_error:
-            self.skip([('Python-unidiff parse error', self.unidiff_parse_error)])
+        cls.added_pnpvs    = [(match.group('pn'), match.group('pv')) for match in added_matches if match]
+        cls.modified_pnpvs = [(match.group('pn'), match.group('pv')) for match in modified_matches if match]
+        cls.removed_pnpvs  = [(match.group('pn'), match.group('pv')) for match in removed_matches if match]
+

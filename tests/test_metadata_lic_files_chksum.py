@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Checks related to the patch's lic_files_chksum metadata variable
+# Checks related to the patch's LIC_FILES_CHKSUM  metadata variable
 #
 # Copyright (C) 2016 Intel Corporation
 #
@@ -17,54 +17,69 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base
-from unittest import skip
-from parse_shortlog import shortlog
+import bitbake
 import re
+import patchtestdata
+import subprocess
 
-@skip("Currently blocked by #10059")
-class LicFilesChkSum(Base):
-
-    licensemarks = re.compile('LIC_FILES_CHKSUM|LICENSE|CHECKSUM|CHKSUM', re.IGNORECASE)
-    addmark      = re.compile('\s*\+LIC_FILES_CHKSUM\s*\??=')
-    removemark   = re.compile('\s*-LIC_FILES_CHKSUM\s*\??=')
-    licclosed    = re.compile('\s*\+LICENSE\s*=\s*"CLOSED"')
-    newpatchrecipes = []
-
-    @classmethod
-    def setUpClassLocal(cls):
-        """Gets those patches than introduced new recipe metadata"""
-        # get just those relevant patches: new software patches
-        for patch in cls.patchset:
-            if patch.path.endswith('.bb') or patch.path.endswith('.bbappend'):
-                if patch.is_added_file:
-                    cls.newpatchrecipes.append(patch)
-
-    def setUp(self):
-        if self.unidiff_parse_error:
-            self.skip([('Parse error', self.unidiff_parse_error)])
+class LicFilesChkSum(bitbake.Bitbake):
+    metadata = 'LIC_FILES_CHKSUM'
+    license  = 'LICENSE'
+    closed   = 'CLOSED'
+    licmark  = re.compile('%s|%s|CHECKSUM|CHKSUM' % (metadata, license), re.IGNORECASE)
 
     def test_lic_files_chksum_presence(self):
-        for patch in self.newpatchrecipes:
-            payload = patch.__str__()
-            # Closed licenses does not required LIC_FILES_CHKSUM
-            if self.licclosed.search(payload):
+        if not self.added_pnpvs:
+            self.skip('No added recipes, skipping test')
+
+        # get the proper metadata values
+        added_licsums = []
+        for pn,pv in self.added_pnpvs:
+            try:
+                added_licsums.append(bitbake.getVar(self.metadata, pn))
+            except subprocess.CalledProcessError:
+                self.skipTest('Target %s cannot be parse by bitbake' % pn)
+
+        for licsum in added_licsums:
+            lic = bitbake.getVar(self.license, pn)
+            if lic == self.closed:
                 continue
-            for line in payload.splitlines():
-                if self.patchmetadata_regex.match(line):
-                    continue
-                if self.addmark.search(line):
-                    break
-            else:
-                self.fail('LIC_FILES_CHKSUM is missing in newly added recipe',
-                          'Specify the variable LIC_FILES_CHKSUM in %s' % patch.path)
+            if not licsum:
+                self.fail('%s is missing in newly added recipe' % self.metadata,
+                          'Specify the variable %s in %s_%s' % (self.metadata, pn, pv))
+
+    def pretest_lic_files_chksum_modified_not_mentioned(self):
+        if not self.modified_pnpvs:
+            self.skipTest('No modified recipes, skipping pretest')
+
+        # get the proper metadata values
+        for pn,pv in self.modified_pnpvs:
+            try:
+                patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(),self.metadata, pn)] = bitbake.getVar(self.metadata, pn)
+            except subprocess.CalledProcessError:
+                self.skipTest('Target %s cannot be parse by bitbake' % pn)
 
     def test_lic_files_chksum_modified_not_mentioned(self):
-        for commit in LicFilesChkSum.commits:
-            if self.addmark.search(commit.payload) and self.removemark.search(commit.payload):
-                # now lets search in the commit message (summary and commit_message)
-                if (not self.licensemarks.search(commit.shortlog)) and \
-                   (not self.licensemarks.search(commit.commit_message)):
-                    self.fail('LIC_FILES_CHKSUM changed but there was no explanation as to why in the commit message',
-                              'Provide a reason for LIC_FILES_CHKSUM change in commit message',
-                              commit.shortlog)
+        if not self.modified_pnpvs:
+            self.skipTest('No modified recipes, skipping test')
+
+        # get the proper metadata values
+        for pn,pv in self.modified_pnpvs:
+            try:
+                patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(),self.metadata, pn)] = bitbake.getVar(self.metadata, pn)
+            except subprocess.CalledProcessError:
+                self.skipTest('Target %s cannot be parse by bitbake' % pn)
+
+        # compare if there were changes between pre-merge and merge
+        for pn,_ in self.modified_pnpvs:
+            pretest = patchtestdata.PatchTestDataStore['pre%s-%s-%s' % (self.shortid(),self.metadata, pn)]
+            test    = patchtestdata.PatchTestDataStore['%s-%s-%s' % (self.shortid(),self.metadata, pn)]
+
+            if pretest != test:
+                # if any patch on the series contain reference on the metadata, fail
+                for commit in self.commits:
+                    if self.licmark.search(commit.shortlog) or self.licmark.search(commit.commit_message):
+                       break
+                else:
+                    self.fail('LIC_FILES_CHKSUM changed on target %s but there was no explanation as to why in the commit message' % pn,
+                              'Provide a reason for LIC_FILES_CHKSUM change in commit message')
