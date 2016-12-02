@@ -42,5 +42,5 @@ class BitbakeEnvironment(bitbake.Bitbake):
                 except subprocess.CalledProcessError as e:
                     self.fail("Bitbake encountered problems while getting the environment for the proposed target '%s'" % pn,
                               "Run 'bitbake %s' and correct the found issues before sending the patch to the mailing list" % pn,
-                              data=bitbake.formatoutput(e))
+                              data=bitbake.formaterror(e))
 

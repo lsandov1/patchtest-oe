@@ -32,27 +32,34 @@ def bitbake(args):
                                                bitbake_cmd)
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
 
-def formatoutput(e, regex='^ERROR:'):
-    def grep(log):
-        prog = re.compile(regex)
-        greplines = []
-        if log:
-            for line in log.splitlines():
-                if prog.search(line):
-                    greplines.append(line)
+def filter(log, regex):
+    """ Filter those lines defined by the regex """
+    prog = re.compile(regex)
+    greplines = []
+    if log:
+        for line in log.splitlines():
+            if prog.search(line):
+                greplines.append(line)
+    if not greplines:
         # something went really wrong, so provide the complete log
-        if not greplines:
-            return log
-        else:
-            out = [('Output', greplines[0])]
-            out.extend([('', line) for line in greplines[1:]])
-            return out
-    return grep(e.output)
+        base.logger.warn(log)
+
+    return greplines
+
+def getVar(var, target=''):
+    plain = ' '.join(filter(bitbake(['-e', target]), '^%s=' % var))
+    return plain.lstrip('%s=' % var).strip('"')
+
+def formaterror(e, regex='^ERROR:'):
+    lines = filter(e.output, regex)
+    out = [('Output', lines[0])]
+    out.extend([('', line) for line in lines[1:]])
+    return out
 
 class Bitbake(base.Base):
 
     # Matches PN and PV from a recipe filename
-    pnpv = re.compile("(?P<pn>^\S+)(_\S+)")
+    pnpv = re.compile("(?P<pn>^\S+)_(?P<pv>\S+)\.\S+")
 
     @classmethod
     def setUpClassLocal(cls):
