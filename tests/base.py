@@ -77,11 +77,13 @@ class Base(TestCase):
         cls.commits = []
         for msg in cls.mbox:
             payload = msg.get_payload()
-            subject = msg['subject'].replace('\n', ' ').replace('  ', ' ')
-            cls.commits.append(Commit(subject=subject,
-                                      shortlog=shortlog(msg['subject']),
-                                      commit_message=commit_message(payload),
-                                      payload=payload))
+            subject = msg['subject']
+            if  payload and subject:
+                subject = subject.replace('\n', ' ').replace('  ', ' ')
+                cls.commits.append(Commit(subject=subject,
+                                   shortlog=shortlog(msg['subject']),
+                                   commit_message=commit_message(payload),
+                                   payload=payload))
 
         cls.setUpClassLocal()
 
