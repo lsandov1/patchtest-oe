@@ -17,11 +17,13 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from base import Base
+import base
+import re
 
-class MboxFormat(Base):
+class MboxFormat(base.Base):
 
     def test_mbox_format(self):
         if self.unidiff_parse_error:
-            self.fail('Parse error: %s' % self.unidiff_parse_error,
-                      'Create the series again using git-format-patch')
+            self.fail('Series cannot be parsed correctly due to malformed diff lines',
+                      'Create the series again using git-format-patch and ensure it can be applied using git am',
+                      data=[('Diff line', re.sub('^.+:','',self.unidiff_parse_error))])
