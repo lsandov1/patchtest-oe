@@ -36,7 +36,7 @@ info=logger.info
 warn=logger.warn
 error=logger.error
 
-Commit = namedtuple('Commit', ['submitter', 'subject', 'commit_message', 'shortlog', 'payload'])
+Commit = namedtuple('Commit', ['author', 'subject', 'commit_message', 'shortlog', 'payload'])
 
 class Base(TestCase):
     # if unit test fails, fail message will throw at least the following JSON: {"id": <testid>}
@@ -81,7 +81,7 @@ class Base(TestCase):
             if  payload and subject:
                 subject = subject.replace('\n', ' ').replace('  ', ' ')
                 cls.commits.append(Commit(subject=subject,
-                                   submitter=msg.get('From'),
+                                   author=msg.get('From'),
                                    shortlog=shortlog(msg['subject']),
                                    commit_message=commit_message(payload),
                                    payload=payload))
