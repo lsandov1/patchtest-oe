@@ -32,5 +32,6 @@ class Author(base.Base):
             for invalid in self.invalids:
                 if invalid.search(commit.author):
                     self.fail('Invalid author %s' % commit.author,
-                              'Resend the series with a valid author')
+                              'Resend the series with a valid patch\'s author',
+                               commit)
 
