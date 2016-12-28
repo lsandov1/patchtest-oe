@@ -21,7 +21,6 @@ import base
 import subprocess
 from patchtestdata import PatchTestInput as pti
 import bitbake
-import re
 
 def _run(cmd):
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
@@ -56,6 +55,7 @@ class OESelfTest(base.Base):
         except subprocess.CalledProcessError as cpe:
             wic_fails = [('Wic Failures', '')]
             wic_fails.extend([('', fail.lstrip('FAIL:').strip()) for fail in bitbake.filter(cpe.output, '^FAIL:')])
-            self.fail('The script oe-selftest fail running wic', 'Make sure you run %s on top of your series' % cpe.cmd,
+            self.fail('The script oe-selftest fail running wic',
+                      'Make sure you run %s on top of your series' % cpe.cmd,
                       data=wic_fails)
 

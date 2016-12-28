@@ -38,10 +38,11 @@ def bitbake(args):
                                                bitbake_cmd)
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
 
-def filter(log, prog):
+def filter(log, regex):
     """ Filter those lines defined by the regex """
     greplines = []
     if log:
+        prog = re.compile(regex)
         for line in log.splitlines():
             if prog.search(line):
                 greplines.append(line)
@@ -52,12 +53,13 @@ def filter(log, prog):
     return greplines
 
 def getVar(var, target=''):
-    plain = ' '.join(filter(bitbake(['-e', target]), re.compile('^%s=' % var)))
+    regex = '^%s=' % var
+    plain = ' '.join(filter(bitbake(['-e', target]), regex))
     return plain.lstrip('%s=' % var).strip('"')
 
 def getFlag(flag, target=''):
-    prog  = prog = re.compile('#\s+\[(?P<flag>%s)\]\s+\"(?P<value>\w+)\"' % flag)
-    plain = ' '.join(filter(bitbake(['-e', target]), prog))
+    regex = '#\s+\[(?P<flag>%s)\]\s+\"(?P<value>\w+)\"' % flag
+    plain = ' '.join(filter(bitbake(['-e', target]), regex))
     flag = ''
     match = prog.search(plain)
     if match:
