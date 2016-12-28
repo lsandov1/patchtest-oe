@@ -66,14 +66,6 @@ def getFlag(flag, target=''):
         flag = match.group('value')
     return flag
 
-def formaterror(e, prog=re.compile('ERROR:', re.IGNORECASE)):
-    out = ''
-    lines = filter(e.output, prog)
-    if len(lines):
-        out = [('Output', lines[0])]
-        out.extend([('', line) for line in lines[1:]])
-    return out
-
 class Bitbake(base.Base):
 
     # Matches PN and PV from a recipe filename
